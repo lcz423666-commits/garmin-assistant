@@ -1,0 +1,36 @@
+{
+  "llm": {
+    "provider": "siliconflow",
+    "model": "Pro/moonshotai/Kimi-K2.5",
+    "api_base_url": "https://api.siliconflow.cn/v1",
+    "api_key": "sk-qwpunbcksmncciebldploznrgsugmzqvdkhplsezoapwyswt"
+  },
+  "monitor": {
+    "check_interval_seconds": 1200,
+    "pid_file": "/root/garmin_assistant/state/garmin_monitor.pid",
+    "state_dir": "/root/garmin_assistant/state",
+    "token_base_dir": "/root/garmin_assistant/tokens",
+    "weekly_report_weekday": 0,
+    "weekly_report_hour": 9,
+    "initial_backfill_days": 30,
+    "min_initial_backfill_days": 7,
+    "high_frequency_start_hour": 5,
+    "high_frequency_end_hour": 9,
+    "high_frequency_interval_seconds": 300,
+    "regular_interval_seconds": 1200
+  },
+  "storage": {
+    "data_root": "/root/garmin_assistant/data"
+  },
+  "feishu": {
+    "enabled": true,
+    "app_id": "cli_a93c93a16938dbde",
+    "app_secret": "6yZknYY6ejef40JnfpDZ1eLcFcliLSse",
+    "app_token": "UEA8b70xTadXpVsDwyNcf4uNn0e",
+    "push_table_id": "tblgI5ph0h5wgLNU",
+    "log_table_id": "tbl5hhc0ZfvGFUCB"
+  },
+  "pushplus": {
+    "admin_token": "596527f7626a4c0ca1f0015da7c4d002"
+  }
+}

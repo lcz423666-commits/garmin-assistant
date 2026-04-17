@@ -1,0 +1,204 @@
+{
+  "users": [
+    {
+      "name": "丛至",
+      "garmin_email": "645042220@qq.com",
+      "garmin_password": "Lcz199529",
+      "garmin_is_cn": false,
+      "pushplus_token": "596527f7626a4c0ca1f0015da7c4d002",
+      "enabled": true,
+      "push_mode": "self",
+      "friend_token": null
+    },
+    {
+      "name": "Kevin",
+      "garmin_email": "656727039@qq.com",
+      "garmin_password": "Kevinxzh123",
+      "garmin_is_cn": false,
+      "pushplus_token": "fa6920765b924f2191dd0b7a7e1414ec",
+      "enabled": true,
+      "push_mode": "self",
+      "friend_token": null
+    },
+    {
+      "name": "杨",
+      "garmin_email": "yangqihao@vip.qq.com",
+      "garmin_password": "Yy19881010.",
+      "garmin_is_cn": false,
+      "pushplus_token": "e960525e7143402097853a1f127de869",
+      "enabled": true,
+      "push_mode": "self",
+      "friend_token": null
+    },
+    {
+      "name": "WangZZ",
+      "garmin_email": "1515369542@qq.com",
+      "garmin_password": "Cqmygysdss200286",
+      "garmin_is_cn": true,
+      "push_mode": "friend",
+      "pushplus_token": null,
+      "friend_token": "484aec96a24f44a7b8aa5d66e1f81b82",
+      "enabled": false
+    },
+    {
+      "name": "远浪舰长",
+      "garmin_email": "41694305@qq.com",
+      "garmin_password": "DXL3.14dxl",
+      "garmin_is_cn": false,
+      "push_mode": "friend",
+      "pushplus_token": null,
+      "friend_token": "d0ff22299ff941e2b63c806272f85c95",
+      "enabled": false
+    },
+    {
+      "name": "小开",
+      "garmin_email": "wwk0025@163.com",
+      "garmin_password": "Wjl137337931",
+      "garmin_is_cn": true,
+      "push_mode": "friend",
+      "pushplus_token": null,
+      "friend_token": "9511baa94a3946c893bfb45bcef717c0",
+      "enabled": false
+    },
+    {
+      "name": "阿天",
+      "garmin_email": "121733812@qq.com",
+      "garmin_password": "ZXrainbow1221",
+      "garmin_is_cn": false,
+      "push_mode": "friend",
+      "pushplus_token": null,
+      "friend_token": "7a1adef98e1c482290a3897bb34bd83f",
+      "enabled": false
+    },
+    {
+      "name": "未央",
+      "garmin_email": "8616608773881",
+      "garmin_password": "Heavy123",
+      "garmin_is_cn": true,
+      "push_mode": "friend",
+      "pushplus_token": null,
+      "friend_token": "0eed1df49b474d9a9ab14372785642ff",
+      "enabled": true
+    },
+    {
+      "name": "阿麦",
+      "garmin_email": "1018915035@qq.com",
+      "garmin_password": "L11235813in",
+      "garmin_is_cn": true,
+      "push_mode": "friend",
+      "pushplus_token": null,
+      "friend_token": "cedc2f6f0cf944da838e5e06c3b41971",
+      "enabled": false
+    },
+    {
+      "name": "十月的麦子",
+      "garmin_email": "ychnjtech@163.com",
+      "garmin_password": "YCHtcwc001",
+      "garmin_is_cn": true,
+      "push_mode": "friend",
+      "pushplus_token": null,
+      "friend_token": "1fc62f59d4834b58921a4c3112b7598e",
+      "enabled": true
+    },
+    {
+      "name": "FSR",
+      "garmin_email": "3356555084@qq.com",
+      "garmin_password": "ChinaJFJ0801",
+      "garmin_is_cn": true,
+      "push_mode": "friend",
+      "pushplus_token": null,
+      "friend_token": "3cf4443102e648cb9309a8187139ddae",
+      "enabled": false
+    },
+    {
+      "name": "Cyanide",
+      "garmin_email": "1528192005@qq.com",
+      "garmin_password": "Song2004",
+      "garmin_is_cn": true,
+      "push_mode": "friend",
+      "pushplus_token": null,
+      "friend_token": "c2ff5e84ef9a4a2f98627716a331b492",
+      "enabled": true
+    },
+    {
+      "name": "捕风的汉子",
+      "garmin_email": "897349831@qq.com",
+      "garmin_password": "Yj970422",
+      "garmin_is_cn": true,
+      "push_mode": "friend",
+      "pushplus_token": null,
+      "friend_token": "d24bb96acc5d4cb885ccf5fcfd59fddb",
+      "enabled": false
+    },
+    {
+      "name": "66KG",
+      "garmin_email": "1655525215@qq.com",
+      "garmin_password": "1470664133Yxs",
+      "garmin_is_cn": true,
+      "push_mode": "friend",
+      "pushplus_token": null,
+      "friend_token": "cebf22021ffa47feb6ec13cdb0806843",
+      "enabled": false
+    },
+    {
+      "name": "闲云野鹤",
+      "garmin_email": "8613063635938",
+      "garmin_password": "2001315Ht",
+      "garmin_is_cn": true,
+      "push_mode": "friend",
+      "pushplus_token": null,
+      "friend_token": "1c560a0200a94a40909a74f1460dbb7e",
+      "enabled": true
+    },
+    {
+      "name": "权",
+      "garmin_email": "2769152524@qq.com",
+      "garmin_password": "12345678Jm.",
+      "garmin_is_cn": true,
+      "push_mode": "friend",
+      "pushplus_token": null,
+      "friend_token": "59820ac6074641289a2397302947e86d",
+      "enabled": false
+    },
+    {
+      "name": "jyf",
+      "garmin_email": "296876549@qq.com",
+      "garmin_password": "Jia2523168ming",
+      "garmin_is_cn": true,
+      "push_mode": "friend",
+      "pushplus_token": null,
+      "friend_token": "b6f487fe8290463e91bc60123a48dfa3",
+      "enabled": true
+    },
+    {
+      "name": "谢亚轩",
+      "garmin_email": "572748418@qq.com",
+      "garmin_password": "Xxwzyxxyx123",
+      "garmin_is_cn": true,
+      "push_mode": "friend",
+      "pushplus_token": null,
+      "friend_token": "22a16369cd594477a6c077fec35dc64c",
+      "enabled": true
+    },
+    {
+      "name": "邱万惜",
+      "garmin_email": "8618030165218",
+      "garmin_password": "TKFP1173@qwx",
+      "garmin_is_cn": true,
+      "push_mode": "friend",
+      "pushplus_token": null,
+      "friend_token": "077f13378df44f1fa9893e34729373ac",
+      "enabled": true
+    },
+    {
+      "name": "江米小枣",
+      "garmin_email": "849648717@qq.com",
+      "garmin_password": "95829582zbcdhY",
+      "garmin_is_cn": true,
+      "push_mode": "friend",
+      "pushplus_token": "",
+      "friend_token": "eda2f24bc81f4b8f88295649e7e6d187",
+      "enabled": true
+    }
+  ]
+}

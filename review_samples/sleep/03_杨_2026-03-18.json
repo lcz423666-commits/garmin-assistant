@@ -1,0 +1,140 @@
+{
+  "metadata": {
+    "sample_type": "sleep",
+    "user_name": "杨",
+    "display_name": "一只自行车",
+    "date": "2026-03-18",
+    "generated_at": "2026-03-19T17:22:17.467931+08:00",
+    "source": "dry_run_current_chain",
+    "model_chain": "current_script + DeepSeek V3.2",
+    "feature": "睡眠恢复较好，最低血氧偏低，HRV 明显低于基线"
+  },
+  "normalized_data": {
+    "date": "2026-03-18",
+    "basic_sleep": {
+      "date": "2026-03-18",
+      "total_sleep_min": 467,
+      "deep_sleep_min": 106,
+      "rem_sleep_min": 59,
+      "light_sleep_min": 302,
+      "awake_min": 2,
+      "sleep_score": 86,
+      "sleep_score_level": "GOOD"
+    },
+    "recovery_status": {
+      "avg_sleep_hr": 66.0,
+      "resting_hr": 61,
+      "resting_hr_7d_avg": 57,
+      "hrv_last_night": 48,
+      "hrv_weekly_avg": 56,
+      "hrv_status": "BALANCED",
+      "hrv_baseline_low": 36,
+      "hrv_baseline_high": 57,
+      "avg_sleep_stress": 17.0,
+      "awake_count": 0,
+      "avg_spo2": 94.0,
+      "lowest_spo2": 87,
+      "body_battery_at_wake": 74,
+      "body_battery_charged": 70,
+      "body_battery_current": 35
+    },
+    "continuous_trends": {
+      "sleep_need_baseline_min": 470,
+      "sleep_need_actual_min": 520,
+      "sleep_need_feedback": "HIGHLY_INCREASED",
+      "next_sleep_need_min": 490,
+      "average_stress_level": 24,
+      "body_battery_highest": 74,
+      "body_battery_lowest": 13,
+      "body_battery_during_sleep": 64,
+      "stress_percentage": 25.02,
+      "rest_stress_percentage": 55.11
+    },
+    "auxiliary": {
+      "avg_respiration": 16.0,
+      "lowest_respiration": 11.0,
+      "highest_respiration": 21.0,
+      "sleep_feedback_code": "POSITIVE_LONG_AND_DEEP",
+      "sleep_personalized_insight": "HARD_EXERCISE_POS_EXCELLENT_OR_GOOD_SLEEP_HARD_CLOSE_BED",
+      "dynamic_feedback": "HIGH"
+    }
+  },
+  "llm_payload": {
+    "message_type": "sleep_morning",
+    "date": "2026-03-18",
+    "greeting": "下午好",
+    "user_name": "一只自行车",
+    "salutation": "一只自行车，",
+    "preferred_opening": "一只自行车，昨晚恢复中等偏稳，不算糟，但也不是完全无忧。",
+    "length_target": "400-650字，最多650字",
+    "overall_judgement": "昨晚恢复中等偏稳，不算糟，但也不是完全无忧。",
+    "reason_points": [
+      "总睡眠 7小时47分钟，睡眠评分 86。",
+      "深睡 106 分钟，REM 59 分钟，结构算完整。",
+      "HRV 48，你的平衡区间大约在 36-57。",
+      "起床时身体电量恢复到 74。"
+    ],
+    "highlight_point": "这晚的亮点是深睡拉到了 106 分钟，修复质量是够的。",
+    "issue_point": "需要提醒你的是，最低血氧 87%。 说明夜里出现过短时血氧下探，这种情况不适合直接忽略。",
+    "issue_bound_advice": "今晚继续留意睡姿、鼻部通畅和卧室通风，如果后面连续多晚都偏低，再重点复查。",
+    "trend_summary": "和最近一周相比，这晚睡得更足，恢复是往回补的。",
+    "today_advice_focus": "problem_first",
+    "forced_alerts": [
+      {
+        "rule": "lowest_spo2_low",
+        "title": "最低血氧偏低",
+        "evidence": "最低血氧 87%。",
+        "impact": "说明夜里出现过短时血氧下探，这种情况不适合直接忽略。",
+        "advice": "今晚继续留意睡姿、鼻部通畅和卧室通风，如果后面连续多晚都偏低，再重点复查。",
+        "severity": 5
+      },
+      {
+        "rule": "hrv_below_baseline",
+        "title": "HRV 明显低于基线",
+        "evidence": "HRV 48，低于平衡下沿 36。",
+        "impact": "恢复系统的余量没有平时充足，今天不适合硬顶强度。",
+        "advice": "今天把重点放在恢复和节奏控制，尤其别临时加一段高强度。",
+        "severity": 5
+      },
+      {
+        "rule": "resting_hr_above_7d_avg",
+        "title": "静息心率高于近 7 天均值",
+        "evidence": "静息心率 61，近 7 天均值 57。",
+        "impact": "通常意味着身体还没有完全回到轻松状态。",
+        "advice": "今天把训练上限压住，先看身体对日间活动的反馈，不要一上来就冲。",
+        "severity": 4
+      }
+    ],
+    "must_mention": [
+      "最低血氧偏低",
+      "HRV 明显低于基线",
+      "静息心率高于近 7 天均值"
+    ],
+    "key_metrics": {
+      "total_sleep_min": 467,
+      "total_sleep_text": "7小时47分钟",
+      "sleep_score": 86,
+      "deep_sleep_min": 106,
+      "rem_sleep_min": 59,
+      "awake_count": 0,
+      "avg_sleep_stress": 17.0,
+      "hrv_last_night": 48,
+      "hrv_weekly_avg": 56,
+      "resting_hr": 61,
+      "resting_hr_7d_avg": 57,
+      "body_battery_at_wake": 74,
+      "lowest_spo2": 87,
+      "sleep_need_actual_min": 520
+    },
+    "context": {
+      "recent_avg_sleep_min": 422.0,
+      "recent_avg_sleep_score": 74.71,
+      "recent_avg_hrv": 57.57,
+      "recent_avg_body_battery_at_wake": 80.43,
+      "sleep_feedback_code": "POSITIVE_LONG_AND_DEEP",
+      "sleep_personalized_insight": "HARD_EXERCISE_POS_EXCELLENT_OR_GOOD_SLEEP_HARD_CLOSE_BED",
+      "dynamic_feedback": "HIGH"
+    }
+  },
+  "final_message": "一只自行车，昨晚恢复中等偏稳，不算糟，但也不是完全无忧。\n\n从整体看，睡眠时长7小时47分钟和评分86分都不错，深睡106分钟和REM睡眠59分钟意味着结构完整，修复质量足。这晚的亮点是深睡拉到了106分钟，修复质量是够的。起床时身体电量恢复到了74。\n\n不过，几个关键指标提示你需要关注：首先是夜里最低血氧出现了87%的下探，这种短时波动虽然单次未必严重，但不适合直接忽略。其次，HRV为48，虽然在你个人的平衡区间（约36-57）内，但已处于下沿，显示恢复系统的余量没平时充足。另外，静息心率61也略高于近一周57的均值，通常意味着身体还没完全回到最轻松的状态。\n\n综合以上，今天不太适合硬顶强度训练。建议你先把重点放在恢复和节奏控制上，尤其不要临时增加高强度段落。白天可以先观察身体对日常活动的反馈，训练上限要适当压住，不要一上来就冲。\n\n和最近一周相比，这晚你睡得更足，恢复是往回补的，整体趋势是积极的。"
+}

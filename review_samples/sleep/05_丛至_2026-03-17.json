@@ -1,0 +1,122 @@
+{
+  "metadata": {
+    "sample_type": "sleep",
+    "user_name": "丛至",
+    "display_name": "李丛至",
+    "date": "2026-03-17",
+    "generated_at": "2026-03-19T17:22:41.644330+08:00",
+    "source": "dry_run_current_chain",
+    "model_chain": "current_script + DeepSeek V3.2",
+    "feature": "睡眠恢复较好，最低血氧偏低"
+  },
+  "normalized_data": {
+    "date": "2026-03-17",
+    "basic_sleep": {
+      "date": "2026-03-17",
+      "total_sleep_min": 437,
+      "deep_sleep_min": 102,
+      "rem_sleep_min": 54,
+      "light_sleep_min": 281,
+      "awake_min": 28,
+      "sleep_score": 80,
+      "sleep_score_level": "GOOD"
+    },
+    "recovery_status": {
+      "avg_sleep_hr": 50.0,
+      "resting_hr": 46,
+      "resting_hr_7d_avg": 49,
+      "hrv_last_night": 43,
+      "hrv_weekly_avg": 42,
+      "hrv_status": "BALANCED",
+      "hrv_baseline_low": 38,
+      "hrv_baseline_high": 54,
+      "avg_sleep_stress": 13.0,
+      "awake_count": 1,
+      "avg_spo2": 94.0,
+      "lowest_spo2": 84,
+      "body_battery_at_wake": 100,
+      "body_battery_charged": 54,
+      "body_battery_current": 34
+    },
+    "continuous_trends": {
+      "sleep_need_baseline_min": 480,
+      "sleep_need_actual_min": 530,
+      "sleep_need_feedback": "HIGHLY_INCREASED",
+      "next_sleep_need_min": 540,
+      "average_stress_level": 25,
+      "body_battery_highest": 100,
+      "body_battery_lowest": 34,
+      "body_battery_during_sleep": 49,
+      "stress_percentage": 22.43,
+      "rest_stress_percentage": 54.03
+    },
+    "auxiliary": {
+      "avg_respiration": 15.0,
+      "lowest_respiration": 10.0,
+      "highest_respiration": 19.0,
+      "sleep_feedback_code": "POSITIVE_LONG_AND_DEEP",
+      "sleep_personalized_insight": "STRESS_POS_EXCELLENT_OR_GOOD_SLEEP_VERY_RESTFUL_DAY",
+      "dynamic_feedback": "HIGH"
+    }
+  },
+  "llm_payload": {
+    "message_type": "sleep_morning",
+    "date": "2026-03-17",
+    "greeting": "下午好",
+    "user_name": "李丛至",
+    "salutation": "李丛至，",
+    "preferred_opening": "李丛至，昨晚恢复中等偏稳，不算糟，但也不是完全无忧。",
+    "length_target": "400-650字，最多650字",
+    "overall_judgement": "昨晚恢复中等偏稳，不算糟，但也不是完全无忧。",
+    "reason_points": [
+      "总睡眠 7小时17分钟，睡眠评分 80。",
+      "深睡 102 分钟，REM 54 分钟，结构算完整。",
+      "HRV 43，你的平衡区间大约在 38-54。",
+      "起床时身体电量恢复到 100。"
+    ],
+    "highlight_point": "起床时身体电量恢复到 100，说明这一晚的恢复质量是比较扎实的。",
+    "issue_point": "需要提醒你的是，最低血氧 84%。 说明夜里出现过短时血氧下探，这种情况不适合直接忽略。",
+    "issue_bound_advice": "今晚继续留意睡姿、鼻部通畅和卧室通风，如果后面连续多晚都偏低，再重点复查。",
+    "trend_summary": "和最近一周相比，这晚整体还算稳定，没有明显掉出常态。",
+    "today_advice_focus": "problem_first",
+    "forced_alerts": [
+      {
+        "rule": "lowest_spo2_low",
+        "title": "最低血氧偏低",
+        "evidence": "最低血氧 84%。",
+        "impact": "说明夜里出现过短时血氧下探，这种情况不适合直接忽略。",
+        "advice": "今晚继续留意睡姿、鼻部通畅和卧室通风，如果后面连续多晚都偏低，再重点复查。",
+        "severity": 5
+      }
+    ],
+    "must_mention": [
+      "最低血氧偏低"
+    ],
+    "key_metrics": {
+      "total_sleep_min": 437,
+      "total_sleep_text": "7小时17分钟",
+      "sleep_score": 80,
+      "deep_sleep_min": 102,
+      "rem_sleep_min": 54,
+      "awake_count": 1,
+      "avg_sleep_stress": 13.0,
+      "hrv_last_night": 43,
+      "hrv_weekly_avg": 42,
+      "resting_hr": 46,
+      "resting_hr_7d_avg": 49,
+      "body_battery_at_wake": 100,
+      "lowest_spo2": 84,
+      "sleep_need_actual_min": 530
+    },
+    "context": {
+      "recent_avg_sleep_min": 451.57,
+      "recent_avg_sleep_score": 76.71,
+      "recent_avg_hrv": 42.57,
+      "recent_avg_body_battery_at_wake": 93.86,
+      "sleep_feedback_code": "POSITIVE_LONG_AND_DEEP",
+      "sleep_personalized_insight": "STRESS_POS_EXCELLENT_OR_GOOD_SLEEP_VERY_RESTFUL_DAY",
+      "dynamic_feedback": "HIGH"
+    }
+  },
+  "final_message": "李丛至，昨晚恢复中等偏稳，不算糟，但也不是完全无忧。\n\n首先从数据来看，昨晚睡了7小时17分钟，睡眠评分80分。深睡有1小时42分钟，REM睡眠54分钟，整体结构还算完整。同时，你的HRV值43正处于你个人平衡区间（约38-54）内，再加上起床时身体电量恢复到了100，都说明这一晚的恢复质量是比较扎实的。\n\n但是，有一个明确的问题需要提醒你：最低血氧84%。这说明夜里出现过短时的血氧下探，虽然可能只是偶发，但这种情况不适合直接忽略，提示你可能存在呼吸不畅或供氧效率稍低的问题。\n\n针对这个点，建议你今晚继续留意一下睡姿、确保鼻部通畅和室内通风良好。先观察一两天，如果类似的偏低情况连续多晚出现，我们再重点复查和考虑调整。\n\n总的来说，和最近一周的趋势相比，你这一晚的睡眠表现还算稳定，没有出现明显跌出常态的情况。继续保持对质量的关注就好。"
+}

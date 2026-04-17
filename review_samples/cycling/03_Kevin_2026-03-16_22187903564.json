@@ -1,0 +1,208 @@
+{
+  "metadata": {
+    "sample_type": "cycling",
+    "user_name": "Kevin",
+    "display_name": "Kevin",
+    "date": "2026-03-16",
+    "generated_at": "2026-03-19T17:23:48.862303+08:00",
+    "source": "dry_run_current_chain",
+    "model_chain": "current_script + DeepSeek V3.2",
+    "feature": "骑行中高强度，强度或负荷显著偏高，补水缺口明显"
+  },
+  "normalized_data": {
+    "date": "2026-03-16",
+    "basic_activity": {
+      "activity_id": "22187903564",
+      "date": "2026-03-16",
+      "start_time_local": "2026-03-16 09:23:45",
+      "sport_type": "road_biking",
+      "activity_name": "东莞市 公路骑行",
+      "distance_km": 60.1,
+      "duration_min": 154.3,
+      "moving_duration_min": 154.2,
+      "elapsed_duration_min": 154.3,
+      "stop_duration_min": 0.1,
+      "elevation_gain_m": 1210.0,
+      "avg_speed_kmh": 23.4,
+      "max_speed_kmh": 56.1,
+      "calories": 1615.0,
+      "avg_hr": 134.0,
+      "max_hr": 160.0
+    },
+    "load_recovery": {
+      "training_stress_score": 148.3000030517578,
+      "activity_training_load": 231.338623046875,
+      "aerobic_te": 4.699999809265137,
+      "anaerobic_te": 2.0,
+      "training_effect_label": "AEROBIC_BASE",
+      "moderate_minutes": 19,
+      "vigorous_minutes": 106,
+      "estimated_recovery_time": null,
+      "water_estimated_ml": 1575.0,
+      "water_consumed_ml": 412.0,
+      "temperature_min": 22.0,
+      "temperature_max": 29.0
+    },
+    "sport_specific": {
+      "avg_power": 152.0,
+      "max_power": 343.0,
+      "normalized_power": 195.0,
+      "intensity_factor": 0.7609999775886536,
+      "max_20min_power": 201.28333333333333,
+      "max_20sec_power": 318,
+      "avg_cadence": 76.0,
+      "max_cadence": 115.0,
+      "avg_left_balance": 51.95,
+      "power_zone_summary": "主体落在Z1-Z2-Z3，整体更偏耐力稳态。",
+      "hr_zone_summary": "主体落在Z1-Z2-Z3，整体更偏耐力稳态。",
+      "hydration_gap_ml": 1163.0,
+      "balance_offset_pct": 3.9,
+      "balance_status": "balanced",
+      "pacing_trend": "前中后段输出有波动，但还没有到明显崩掉的程度。",
+      "pacing_flag": "mixed",
+      "power_variability_ratio": 1.28,
+      "power_variability_note": "NP 明显高于平均功率，这次输出波动和冲击段都不少。",
+      "left_right_balance_note": "左右发力整体比较均衡。",
+      "cadence_status": "moderate",
+      "cadence_note": "踏频不高，更偏力量型踩踏。",
+      "hr_power_relation_note": null
+    },
+    "continuous_background": {
+      "vs_user_typical_load": "偏高",
+      "vs_user_typical_duration": "偏高",
+      "vs_user_typical_intensity": "未知",
+      "is_above_recent_baseline": true,
+      "recent_training_density": 2,
+      "is_back_to_back_hard_day": false,
+      "recent_typical_load": 14.45,
+      "recent_typical_duration": 37.25,
+      "recent_typical_intensity": null
+    },
+    "achievement_summary": {
+      "recent_badge_names": [
+        "International Women's Day 2026",
+        "Planning Ahead",
+        "Set a Date",
+        "Light Up the Night 2026",
+        "indoor 10mile ride"
+      ],
+      "has_recent_milestone_badge": true,
+      "badge_count_recent": 10
+    }
+  },
+  "llm_payload": {
+    "message_type": "activity_brief",
+    "date": "2026-03-16",
+    "user_name": "Kevin",
+    "activity_name": "东莞市 公路骑行",
+    "sport_type": "road_biking",
+    "length_target": "450-700字，最多700字",
+    "training_summary": "这次训练是中高强度的有效刺激，质量不错，但恢复不能随便带过。",
+    "reason_points": [
+      "全程 60.1km / 154.3 分钟 / 爬升 1210.0m。",
+      "TSS 148.3000030517578，训练负荷 231.338623046875，IF 0.7609999775886536。",
+      "NP 195.0W，对比平均功率 152.0W，输出波动比大约 1.28。",
+      "功率结构上，主体落在Z1-Z2-Z3，整体更偏耐力稳态。 心率结构看，主体落在Z1-Z2-Z3，整体更偏耐力稳态。"
+    ],
+    "highlight_point": "这次亮点在于你把有波动的输出顶住了，说明不仅能骑完，还能扛住变化。",
+    "issue_point": "需要明确点出来的是，TSS 148.3000030517578，训练负荷 231.338623046875，IF 0.7609999775886536。 这不是轻松骑，恢复窗口需要主动留出来。",
+    "secondary_issue_point": "预估补水缺口约 1163.0ml。 这种缺口会直接影响后半段输出和恢复体感。",
+    "issue_bound_advice": "接下来 24-48 小时把高强度安排往后放，先把补水、碳水和睡眠补齐。",
+    "trend_summary": "和你最近基线相比，这次属于更重的一次。",
+    "cycling_specific_summary": {
+      "if": 0.7609999775886536,
+      "tss": 148.3000030517578,
+      "activity_load": 231.338623046875,
+      "np_vs_avg_power": {
+        "normalized_power": 195.0,
+        "avg_power": 152.0,
+        "ratio": 1.28
+      },
+      "left_right_balance_note": "左右发力整体比较均衡。",
+      "cadence_note": "踏频不高，更偏力量型踩踏。",
+      "power_zone_summary": "主体落在Z1-Z2-Z3，整体更偏耐力稳态。",
+      "hr_zone_summary": "主体落在Z1-Z2-Z3，整体更偏耐力稳态。",
+      "hydration_gap_ml": 1163.0,
+      "pacing_trend": "前中后段输出有波动，但还没有到明显崩掉的程度。",
+      "stop_duration_min": 0.1
+    },
+    "today_advice_focus": "problem_first",
+    "priority_issues": [
+      {
+        "rule": "training_load_high",
+        "title": "强度或负荷显著偏高",
+        "evidence": "TSS 148.3000030517578，训练负荷 231.338623046875，IF 0.7609999775886536。",
+        "impact": "这不是轻松骑，恢复窗口需要主动留出来。",
+        "advice": "接下来 24-48 小时把高强度安排往后放，先把补水、碳水和睡眠补齐。",
+        "severity": 5,
+        "priority_group": 1,
+        "priority_rank": 1
+      },
+      {
+        "rule": "hydration_gap_high",
+        "title": "补水缺口明显",
+        "evidence": "预估补水缺口约 1163.0ml。",
+        "impact": "这种缺口会直接影响后半段输出和恢复体感。",
+        "advice": "这次结束后优先把水和电解质补足，下一次同等时长骑行要把补水节奏前置。",
+        "severity": 5,
+        "priority_group": 1,
+        "priority_rank": 3
+      }
+    ],
+    "secondary_issues": [],
+    "forced_alerts": [
+      {
+        "rule": "training_load_high",
+        "title": "强度或负荷显著偏高",
+        "evidence": "TSS 148.3000030517578，训练负荷 231.338623046875，IF 0.7609999775886536。",
+        "impact": "这不是轻松骑，恢复窗口需要主动留出来。",
+        "advice": "接下来 24-48 小时把高强度安排往后放，先把补水、碳水和睡眠补齐。",
+        "severity": 5,
+        "priority_group": 1,
+        "priority_rank": 1
+      },
+      {
+        "rule": "hydration_gap_high",
+        "title": "补水缺口明显",
+        "evidence": "预估补水缺口约 1163.0ml。",
+        "impact": "这种缺口会直接影响后半段输出和恢复体感。",
+        "advice": "这次结束后优先把水和电解质补足，下一次同等时长骑行要把补水节奏前置。",
+        "severity": 5,
+        "priority_group": 1,
+        "priority_rank": 3
+      }
+    ],
+    "must_mention": [
+      "强度或负荷显著偏高",
+      "补水缺口明显"
+    ],
+    "key_metrics": {
+      "distance_km": 60.1,
+      "duration_min": 154.3,
+      "moving_duration_min": 154.2,
+      "elapsed_duration_min": 154.3,
+      "stop_duration_min": 0.1,
+      "elevation_gain_m": 1210.0,
+      "training_stress_score": 148.3000030517578,
+      "activity_training_load": 231.338623046875,
+      "avg_hr": 134.0,
+      "avg_power": 152.0,
+      "normalized_power": 195.0,
+      "intensity_factor": 0.7609999775886536,
+      "avg_cadence": 76.0,
+      "hydration_gap_ml": 1163.0
+    },
+    "context": {
+      "vs_user_typical_load": "偏高",
+      "vs_user_typical_duration": "偏高",
+      "vs_user_typical_intensity": "未知",
+      "recent_typical_load": 14.45,
+      "recent_typical_duration": 37.25,
+      "recent_typical_intensity": null,
+      "power_variability_note": "NP 明显高于平均功率，这次输出波动和冲击段都不少。",
+      "hr_power_relation_note": null,
+      "badge_note": "这次附近还有里程碑类成就，可以作为一句小彩蛋带一下。"
+    }
+  },
+  "final_message": "今天东莞这60公里带1200米爬升的长骑，是一次中高强度的有效刺激，质量不错，但恢复绝不能随便带过。\n\n**这是一次“有质量的耐力课”**。你的标准化功率（NP 195W）比平均功率（152W）高出约28%，说明全程有频繁的功率波动和爬坡、加速等冲击段。能把这种有变化的输出顶住（TSS高达148），证明你的耐力底子不错，不仅能骑完，还能扛住节奏变化。这次训练负荷达到231，显著高于你近期的平均基线，属于一次更重的负荷刺激。\n\n**专项亮点在于你的抗波动能力**。在超过2个半小时的骑行里，面对功率的起伏，你的功率和心率主体都落在了Z1-Z3区间，整体保持了耐力稳态，没有出现大范围的功率崩溃，这非常扎实。\n\n**需要明确的是：这不是轻松骑**。本次训练的两个关键指标——TSS 148和训练强度系数（IF）0.76，都明确指向一次中高强度的深度刺激。这意味着身体的生理压力不小，恢复窗口需要被主动预留出来，而不是被动等待。另一个不容忽视的问题是**补水缺口**。预估约1163毫升的补水差额，会直接影响后半程的体感、输出效率和最终的恢复进程。\n\n因此，接下来的恢复建议直接绑定这两个关键点：\n1.  **针对高强度负荷**：未来24-48小时，请把任何高强度训练或大重量力量训练往后安排。优先补充足量的复合碳水和优质蛋白质，确保身体有修复的原料。\n2.  **针对补水缺口**：训练结束后请立即开始补充水分和电解质，不要等到口渴。下次进行同等时长或强度的骑行时，务必把补水节奏前置，养成定时、主动饮水的习惯。\n\n从连续视角看，这次训练让你近期的训练负荷上了一个台阶。请务必重视这次课后的恢复，利用好身体对深度刺激的适应窗口，让这次扎实的训练真正转化为你的能力。"
+}

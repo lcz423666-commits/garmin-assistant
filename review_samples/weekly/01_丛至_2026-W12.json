@@ -1,0 +1,691 @@
+{
+  "metadata": {
+    "sample_type": "weekly",
+    "user_name": "丛至",
+    "display_name": "李丛至",
+    "date": "2026-W12",
+    "generated_at": "2026-03-19T17:24:54.122233+08:00",
+    "source": "dry_run_current_chain",
+    "model_chain": "current_script + DeepSeek V3.2",
+    "feature": "这周最值得注意的是，系统已经能开始把恢复和训练节奏放在一起看，而不是单点看数据"
+  },
+  "normalized_data": {
+    "sleep_history": [
+      {
+        "date": "2026-03-19",
+        "basic_sleep": {
+          "date": "2026-03-19",
+          "total_sleep_min": 506,
+          "deep_sleep_min": 106,
+          "rem_sleep_min": 117,
+          "light_sleep_min": 283,
+          "awake_min": 36,
+          "sleep_score": 82,
+          "sleep_score_level": "GOOD"
+        },
+        "recovery_status": {
+          "avg_sleep_hr": 52.0,
+          "resting_hr": 48,
+          "resting_hr_7d_avg": 48,
+          "hrv_last_night": 41,
+          "hrv_weekly_avg": 42,
+          "hrv_status": "BALANCED",
+          "hrv_baseline_low": 38,
+          "hrv_baseline_high": 53,
+          "avg_sleep_stress": 20.0,
+          "awake_count": 2,
+          "avg_spo2": 97.0,
+          "lowest_spo2": 88,
+          "body_battery_at_wake": 90,
+          "body_battery_charged": 70,
+          "body_battery_current": 65
+        },
+        "continuous_trends": {
+          "sleep_need_baseline_min": 480,
+          "sleep_need_actual_min": 530,
+          "sleep_need_feedback": "HIGHLY_INCREASED",
+          "next_sleep_need_min": 500,
+          "average_stress_level": 21,
+          "body_battery_highest": 90,
+          "body_battery_lowest": 22,
+          "body_battery_during_sleep": 67,
+          "stress_percentage": 18.95,
+          "rest_stress_percentage": 75.2
+        },
+        "auxiliary": {
+          "avg_respiration": 15.0,
+          "lowest_respiration": 10.0,
+          "highest_respiration": 18.0,
+          "sleep_feedback_code": "POSITIVE_LONG_AND_DEEP",
+          "sleep_personalized_insight": "STRESS_POS_EXCELLENT_OR_GOOD_SLEEP_RESTFUL_DAY",
+          "dynamic_feedback": "HIGH"
+        }
+      },
+      {
+        "date": "2026-03-18",
+        "basic_sleep": {
+          "date": "2026-03-18",
+          "total_sleep_min": 442,
+          "deep_sleep_min": 99,
+          "rem_sleep_min": 45,
+          "light_sleep_min": 298,
+          "awake_min": 54,
+          "sleep_score": 71,
+          "sleep_score_level": "FAIR"
+        },
+        "recovery_status": {
+          "avg_sleep_hr": 55.0,
+          "resting_hr": 49,
+          "resting_hr_7d_avg": 49,
+          "hrv_last_night": 40,
+          "hrv_weekly_avg": 41,
+          "hrv_status": "BALANCED",
+          "hrv_baseline_low": 38,
+          "hrv_baseline_high": 54,
+          "avg_sleep_stress": 21.0,
+          "awake_count": 2,
+          "avg_spo2": 95.0,
+          "lowest_spo2": 79,
+          "body_battery_at_wake": 90,
+          "body_battery_charged": 59,
+          "body_battery_current": 22
+        },
+        "continuous_trends": {
+          "sleep_need_baseline_min": 480,
+          "sleep_need_actual_min": 540,
+          "sleep_need_feedback": "HIGHLY_INCREASED",
+          "next_sleep_need_min": 530,
+          "average_stress_level": 27,
+          "body_battery_highest": 92,
+          "body_battery_lowest": 22,
+          "body_battery_during_sleep": 56,
+          "stress_percentage": 34.1,
+          "rest_stress_percentage": 41.88
+        },
+        "auxiliary": {
+          "avg_respiration": 15.0,
+          "lowest_respiration": 10.0,
+          "highest_respiration": 19.0,
+          "sleep_feedback_code": "NEGATIVE_LONG_BUT_NOT_ENOUGH_REM",
+          "sleep_personalized_insight": "GENERAL_NEG_FAIR_OR_POOR_SLEEP",
+          "dynamic_feedback": "MODERATE"
+        }
+      },
+      {
+        "date": "2026-03-17",
+        "basic_sleep": {
+          "date": "2026-03-17",
+          "total_sleep_min": 437,
+          "deep_sleep_min": 102,
+          "rem_sleep_min": 54,
+          "light_sleep_min": 281,
+          "awake_min": 28,
+          "sleep_score": 80,
+          "sleep_score_level": "GOOD"
+        },
+        "recovery_status": {
+          "avg_sleep_hr": 50.0,
+          "resting_hr": 46,
+          "resting_hr_7d_avg": 49,
+          "hrv_last_night": 43,
+          "hrv_weekly_avg": 42,
+          "hrv_status": "BALANCED",
+          "hrv_baseline_low": 38,
+          "hrv_baseline_high": 54,
+          "avg_sleep_stress": 13.0,
+          "awake_count": 1,
+          "avg_spo2": 94.0,
+          "lowest_spo2": 84,
+          "body_battery_at_wake": 100,
+          "body_battery_charged": 54,
+          "body_battery_current": 34
+        },
+        "continuous_trends": {
+          "sleep_need_baseline_min": 480,
+          "sleep_need_actual_min": 530,
+          "sleep_need_feedback": "HIGHLY_INCREASED",
+          "next_sleep_need_min": 540,
+          "average_stress_level": 25,
+          "body_battery_highest": 100,
+          "body_battery_lowest": 34,
+          "body_battery_during_sleep": 49,
+          "stress_percentage": 22.43,
+          "rest_stress_percentage": 54.03
+        },
+        "auxiliary": {
+          "avg_respiration": 15.0,
+          "lowest_respiration": 10.0,
+          "highest_respiration": 19.0,
+          "sleep_feedback_code": "POSITIVE_LONG_AND_DEEP",
+          "sleep_personalized_insight": "STRESS_POS_EXCELLENT_OR_GOOD_SLEEP_VERY_RESTFUL_DAY",
+          "dynamic_feedback": "HIGH"
+        }
+      },
+      {
+        "date": "2026-03-16",
+        "basic_sleep": {
+          "date": "2026-03-16",
+          "total_sleep_min": 346,
+          "deep_sleep_min": 102,
+          "rem_sleep_min": 51,
+          "light_sleep_min": 193,
+          "awake_min": 19,
+          "sleep_score": 71,
+          "sleep_score_level": "FAIR"
+        },
+        "recovery_status": {
+          "avg_sleep_hr": 53.0,
+          "resting_hr": 49,
+          "resting_hr_7d_avg": 50,
+          "hrv_last_night": 41,
+          "hrv_weekly_avg": 42,
+          "hrv_status": "BALANCED",
+          "hrv_baseline_low": 37,
+          "hrv_baseline_high": 53,
+          "avg_sleep_stress": 14.0,
+          "awake_count": 2,
+          "avg_spo2": 97.0,
+          "lowest_spo2": 91,
+          "body_battery_at_wake": 92,
+          "body_battery_charged": 65,
+          "body_battery_current": 47
+        },
+        "continuous_trends": {
+          "sleep_need_baseline_min": 480,
+          "sleep_need_actual_min": 520,
+          "sleep_need_feedback": "INCREASED",
+          "next_sleep_need_min": 530,
+          "average_stress_level": 20,
+          "body_battery_highest": 94,
+          "body_battery_lowest": 36,
+          "body_battery_during_sleep": 52,
+          "stress_percentage": 19.58,
+          "rest_stress_percentage": 69.31
+        },
+        "auxiliary": {
+          "avg_respiration": 15.0,
+          "lowest_respiration": 10.0,
+          "highest_respiration": 18.0,
+          "sleep_feedback_code": "POSITIVE_DEEP",
+          "sleep_personalized_insight": "MOD_EXERCISE_POS_FAIR_SLEEP_MOD_TO_VIG_DURING_DAY_OUTDOOR",
+          "dynamic_feedback": "HIGH"
+        }
+      },
+      {
+        "date": "2026-03-15",
+        "basic_sleep": {
+          "date": "2026-03-15",
+          "total_sleep_min": 505,
+          "deep_sleep_min": 123,
+          "rem_sleep_min": 107,
+          "light_sleep_min": 275,
+          "awake_min": 10,
+          "sleep_score": 94,
+          "sleep_score_level": "EXCELLENT"
+        },
+        "recovery_status": {
+          "avg_sleep_hr": 50.0,
+          "resting_hr": 47,
+          "resting_hr_7d_avg": 51,
+          "hrv_last_night": 46,
+          "hrv_weekly_avg": 43,
+          "hrv_status": "BALANCED",
+          "hrv_baseline_low": 37,
+          "hrv_baseline_high": 53,
+          "avg_sleep_stress": 9.0,
+          "awake_count": 1,
+          "avg_spo2": 97.0,
+          "lowest_spo2": 93,
+          "body_battery_at_wake": 100,
+          "body_battery_charged": 48,
+          "body_battery_current": 36
+        },
+        "continuous_trends": {
+          "sleep_need_baseline_min": 480,
+          "sleep_need_actual_min": 500,
+          "sleep_need_feedback": "INCREASED",
+          "next_sleep_need_min": 520,
+          "average_stress_level": 15,
+          "body_battery_highest": 100,
+          "body_battery_lowest": 35,
+          "body_battery_during_sleep": 44,
+          "stress_percentage": 5.7,
+          "rest_stress_percentage": 48.64
+        },
+        "auxiliary": {
+          "avg_respiration": 15.0,
+          "lowest_respiration": 10.0,
+          "highest_respiration": 18.0,
+          "sleep_feedback_code": "POSITIVE_HIGHLY_RECOVERING",
+          "sleep_personalized_insight": "RHYTHM_POS_EXCELLENT_SLEEP_EXCELLENT_TIMING",
+          "dynamic_feedback": "HIGH"
+        }
+      },
+      {
+        "date": "2026-03-14",
+        "basic_sleep": {
+          "date": "2026-03-14",
+          "total_sleep_min": 452,
+          "deep_sleep_min": 72,
+          "rem_sleep_min": 48,
+          "light_sleep_min": 332,
+          "awake_min": 42,
+          "sleep_score": 75,
+          "sleep_score_level": "FAIR"
+        },
+        "recovery_status": {
+          "avg_sleep_hr": 55.0,
+          "resting_hr": 49,
+          "resting_hr_7d_avg": 53,
+          "hrv_last_night": 41,
+          "hrv_weekly_avg": 41,
+          "hrv_status": "BALANCED",
+          "hrv_baseline_low": 37,
+          "hrv_baseline_high": 54,
+          "avg_sleep_stress": 16.0,
+          "awake_count": 2,
+          "avg_spo2": 96.0,
+          "lowest_spo2": 86,
+          "body_battery_at_wake": 100,
+          "body_battery_charged": 74,
+          "body_battery_current": 55
+        },
+        "continuous_trends": {
+          "sleep_need_baseline_min": 480,
+          "sleep_need_actual_min": 520,
+          "sleep_need_feedback": "INCREASED",
+          "next_sleep_need_min": 500,
+          "average_stress_level": 18,
+          "body_battery_highest": 100,
+          "body_battery_lowest": 29,
+          "body_battery_during_sleep": 70,
+          "stress_percentage": 14.93,
+          "rest_stress_percentage": 76.18
+        },
+        "auxiliary": {
+          "avg_respiration": 15.0,
+          "lowest_respiration": 8.0,
+          "highest_respiration": 20.0,
+          "sleep_feedback_code": "NEGATIVE_LONG_BUT_NOT_ENOUGH_REM",
+          "sleep_personalized_insight": "GENERAL_NEG_FAIR_OR_POOR_SLEEP",
+          "dynamic_feedback": "HIGH"
+        }
+      },
+      {
+        "date": "2026-03-13",
+        "basic_sleep": {
+          "date": "2026-03-13",
+          "total_sleep_min": 464,
+          "deep_sleep_min": 108,
+          "rem_sleep_min": 57,
+          "light_sleep_min": 299,
+          "awake_min": 48,
+          "sleep_score": 76,
+          "sleep_score_level": "FAIR"
+        },
+        "recovery_status": {
+          "avg_sleep_hr": 54.0,
+          "resting_hr": 50,
+          "resting_hr_7d_avg": 53,
+          "hrv_last_night": 42,
+          "hrv_weekly_avg": 42,
+          "hrv_status": "BALANCED",
+          "hrv_baseline_low": 37,
+          "hrv_baseline_high": 53,
+          "avg_sleep_stress": 14.0,
+          "awake_count": 3,
+          "avg_spo2": 96.0,
+          "lowest_spo2": 91,
+          "body_battery_at_wake": 95,
+          "body_battery_charged": 62,
+          "body_battery_current": 29
+        },
+        "continuous_trends": {
+          "sleep_need_baseline_min": 480,
+          "sleep_need_actual_min": 530,
+          "sleep_need_feedback": "HIGHLY_INCREASED",
+          "next_sleep_need_min": 520,
+          "average_stress_level": 28,
+          "body_battery_highest": 96,
+          "body_battery_lowest": 29,
+          "body_battery_during_sleep": 63,
+          "stress_percentage": 31.9,
+          "rest_stress_percentage": 46.7
+        },
+        "auxiliary": {
+          "avg_respiration": 15.0,
+          "lowest_respiration": 9.0,
+          "highest_respiration": 19.0,
+          "sleep_feedback_code": "NEGATIVE_LONG_BUT_DISCONTINUOUS",
+          "sleep_personalized_insight": "GENERAL_NEG_FAIR_OR_POOR_SLEEP",
+          "dynamic_feedback": "HIGH"
+        }
+      }
+    ],
+    "activity_history": [
+      {
+        "date": "2026-03-17",
+        "basic_activity": {
+          "activity_id": "22199242952",
+          "date": "2026-03-17",
+          "start_time_local": "2026-03-17 10:55:12",
+          "sport_type": "road_biking",
+          "activity_name": "鞍山市 公路骑行",
+          "distance_km": 68.1,
+          "duration_min": 164.7,
+          "moving_duration_min": 164.3,
+          "elapsed_duration_min": 221.2,
+          "stop_duration_min": 56.9,
+          "elevation_gain_m": 498.0,
+          "avg_speed_kmh": 24.8,
+          "max_speed_kmh": 50.4,
+          "calories": 1629.0,
+          "avg_hr": 136.0,
+          "max_hr": 175.0
+        },
+        "load_recovery": {
+          "training_stress_score": 172.39999389648438,
+          "activity_training_load": 136.92066955566406,
+          "aerobic_te": 3.700000047683716,
+          "anaerobic_te": 1.7000000476837158,
+          "training_effect_label": "AEROBIC_BASE",
+          "moderate_minutes": 63,
+          "vigorous_minutes": 92,
+          "estimated_recovery_time": null,
+          "water_estimated_ml": 1231.0,
+          "water_consumed_ml": 875.0,
+          "temperature_min": 15.0,
+          "temperature_max": 21.0
+        },
+        "sport_specific": {
+          "avg_power": 139.0,
+          "max_power": 666.0,
+          "normalized_power": 180.0,
+          "intensity_factor": 0.7940000295639038,
+          "max_20min_power": 168.7125,
+          "max_20sec_power": 412,
+          "avg_cadence": 73.0,
+          "max_cadence": 101.0,
+          "avg_left_balance": 53.65,
+          "power_zone_summary": "主体落在Z1-Z2-Z3，整体更偏耐力稳态。",
+          "hr_zone_summary": "主体落在Z1-Z2-Z3，整体更偏耐力稳态。",
+          "hydration_gap_ml": 356.0,
+          "balance_offset_pct": 7.3,
+          "balance_status": "mild_left_bias",
+          "pacing_trend": "前后段功率差不大，整体节奏比较稳，没有明显后程崩盘。",
+          "pacing_flag": "stable",
+          "power_variability_ratio": 1.29,
+          "power_variability_note": "NP 明显高于平均功率，这次输出波动和冲击段都不少。",
+          "left_right_balance_note": "左右发力有轻微偏侧，但还在可接受范围。",
+          "cadence_status": "moderate",
+          "cadence_note": "踏频不高，更偏力量型踩踏。",
+          "hr_power_relation_note": null
+        },
+        "continuous_background": {
+          "vs_user_typical_load": "未知",
+          "vs_user_typical_duration": "未知",
+          "vs_user_typical_intensity": "未知",
+          "is_above_recent_baseline": false,
+          "recent_training_density": 0,
+          "is_back_to_back_hard_day": false,
+          "recent_typical_load": null,
+          "recent_typical_duration": null,
+          "recent_typical_intensity": null
+        },
+        "achievement_summary": {
+          "recent_badge_names": [
+            "International Women's Day 2026",
+            "indoor 50k ride",
+            "Winter Solstice Festival 2025",
+            "Halloween 2025",
+            "Stepping Up 20K"
+          ],
+          "has_recent_milestone_badge": true,
+          "badge_count_recent": 10
+        }
+      },
+      {
+        "date": "2026-03-15",
+        "basic_activity": {
+          "activity_id": "22177212029",
+          "date": "2026-03-15",
+          "start_time_local": "2026-03-15 12:55:38",
+          "sport_type": "road_biking",
+          "activity_name": "鞍山市 公路骑行",
+          "distance_km": 40.0,
+          "duration_min": 86.5,
+          "moving_duration_min": 86.2,
+          "elapsed_duration_min": 120.4,
+          "stop_duration_min": 34.2,
+          "elevation_gain_m": 169.0,
+          "avg_speed_kmh": 27.8,
+          "max_speed_kmh": 48.9,
+          "calories": 923.0,
+          "avg_hr": 143.0,
+          "max_hr": 179.0
+        },
+        "load_recovery": {
+          "training_stress_score": null,
+          "activity_training_load": 125.54908752441406,
+          "aerobic_te": 3.700000047683716,
+          "anaerobic_te": 0.8999999761581421,
+          "training_effect_label": "AEROBIC_BASE",
+          "moderate_minutes": 30,
+          "vigorous_minutes": 64,
+          "estimated_recovery_time": null,
+          "water_estimated_ml": 688.0,
+          "water_consumed_ml": null,
+          "temperature_min": 9.0,
+          "temperature_max": 18.0
+        },
+        "sport_specific": {
+          "avg_power": null,
+          "max_power": null,
+          "normalized_power": null,
+          "intensity_factor": null,
+          "max_20min_power": null,
+          "max_20sec_power": null,
+          "avg_cadence": null,
+          "max_cadence": null,
+          "avg_left_balance": null,
+          "power_zone_summary": "暂无足够区间信息。",
+          "hr_zone_summary": "主体落在Z1-Z2-Z3，整体更偏耐力稳态。",
+          "hydration_gap_ml": null,
+          "balance_offset_pct": null,
+          "balance_status": null,
+          "pacing_trend": "前中后段输出有波动，但还没有到明显崩掉的程度。",
+          "pacing_flag": "mixed",
+          "power_variability_ratio": null,
+          "power_variability_note": null,
+          "left_right_balance_note": null,
+          "cadence_status": null,
+          "cadence_note": null,
+          "hr_power_relation_note": null
+        },
+        "continuous_background": {
+          "vs_user_typical_load": "未知",
+          "vs_user_typical_duration": "偏低",
+          "vs_user_typical_intensity": "未知",
+          "is_above_recent_baseline": false,
+          "recent_training_density": 1,
+          "is_back_to_back_hard_day": true,
+          "recent_typical_load": 172.4,
+          "recent_typical_duration": 164.7,
+          "recent_typical_intensity": 0.79
+        },
+        "achievement_summary": {
+          "recent_badge_names": [
+            "International Women's Day 2026",
+            "indoor 50k ride",
+            "Winter Solstice Festival 2025",
+            "Halloween 2025",
+            "Stepping Up 20K"
+          ],
+          "has_recent_milestone_badge": true,
+          "badge_count_recent": 10
+        }
+      },
+      {
+        "date": "2026-03-15",
+        "basic_activity": {
+          "activity_id": "22176818230",
+          "date": "2026-03-15",
+          "start_time_local": "2026-03-15 12:41:16",
+          "sport_type": "strength_training",
+          "activity_name": "力量训练",
+          "distance_km": 0.0,
+          "duration_min": 0.4,
+          "moving_duration_min": 0.4,
+          "elapsed_duration_min": 0.4,
+          "stop_duration_min": 0.0,
+          "elevation_gain_m": null,
+          "avg_speed_kmh": 0.0,
+          "max_speed_kmh": null,
+          "calories": 1.0,
+          "avg_hr": 82.0,
+          "max_hr": 86.0
+        },
+        "load_recovery": {
+          "training_stress_score": null,
+          "activity_training_load": 0.069976806640625,
+          "aerobic_te": 0.0,
+          "anaerobic_te": 0.0,
+          "training_effect_label": "UNKNOWN",
+          "moderate_minutes": null,
+          "vigorous_minutes": null,
+          "estimated_recovery_time": null,
+          "water_estimated_ml": 2.0,
+          "water_consumed_ml": null,
+          "temperature_min": null,
+          "temperature_max": null
+        },
+        "sport_specific": {},
+        "continuous_background": {
+          "vs_user_typical_load": "未知",
+          "vs_user_typical_duration": "偏低",
+          "vs_user_typical_intensity": "未知",
+          "is_above_recent_baseline": false,
+          "recent_training_density": 2,
+          "is_back_to_back_hard_day": true,
+          "recent_typical_load": 172.4,
+          "recent_typical_duration": 125.6,
+          "recent_typical_intensity": 0.79
+        },
+        "achievement_summary": {
+          "recent_badge_names": [
+            "International Women's Day 2026",
+            "indoor 50k ride",
+            "Winter Solstice Festival 2025",
+            "Halloween 2025",
+            "Stepping Up 20K"
+          ],
+          "has_recent_milestone_badge": true,
+          "badge_count_recent": 10
+        }
+      },
+      {
+        "date": "2026-03-13",
+        "basic_activity": {
+          "activity_id": "22156084188",
+          "date": "2026-03-13",
+          "start_time_local": "2026-03-13 10:20:33",
+          "sport_type": "road_biking",
+          "activity_name": "鞍山市 公路骑行",
+          "distance_km": 42.2,
+          "duration_min": 100.4,
+          "moving_duration_min": 100.2,
+          "elapsed_duration_min": 189.9,
+          "stop_duration_min": 89.7,
+          "elevation_gain_m": 206.0,
+          "avg_speed_kmh": 25.2,
+          "max_speed_kmh": 51.9,
+          "calories": 1064.0,
+          "avg_hr": 140.0,
+          "max_hr": 174.0
+        },
+        "load_recovery": {
+          "training_stress_score": null,
+          "activity_training_load": 93.84381103515625,
+          "aerobic_te": 3.200000047683716,
+          "anaerobic_te": 1.2999999523162842,
+          "training_effect_label": "AEROBIC_BASE",
+          "moderate_minutes": 24,
+          "vigorous_minutes": 93,
+          "estimated_recovery_time": null,
+          "water_estimated_ml": 802.0,
+          "water_consumed_ml": 750.0,
+          "temperature_min": 12.0,
+          "temperature_max": 18.0
+        },
+        "sport_specific": {
+          "avg_power": null,
+          "max_power": null,
+          "normalized_power": null,
+          "intensity_factor": null,
+          "max_20min_power": null,
+          "max_20sec_power": null,
+          "avg_cadence": null,
+          "max_cadence": null,
+          "avg_left_balance": null,
+          "power_zone_summary": "暂无足够区间信息。",
+          "hr_zone_summary": "主体落在Z1-Z2-Z3，整体更偏耐力稳态。",
+          "hydration_gap_ml": 52.0,
+          "balance_offset_pct": null,
+          "balance_status": null,
+          "pacing_trend": "前中后段输出有波动，但还没有到明显崩掉的程度。",
+          "pacing_flag": "mixed",
+          "power_variability_ratio": null,
+          "power_variability_note": null,
+          "left_right_balance_note": null,
+          "cadence_status": null,
+          "cadence_note": null,
+          "hr_power_relation_note": null
+        },
+        "continuous_background": {
+          "vs_user_typical_load": "未知",
+          "vs_user_typical_duration": "偏高",
+          "vs_user_typical_intensity": "未知",
+          "is_above_recent_baseline": false,
+          "recent_training_density": 3,
+          "is_back_to_back_hard_day": false,
+          "recent_typical_load": 172.4,
+          "recent_typical_duration": 86.5,
+          "recent_typical_intensity": 0.79
+        },
+        "achievement_summary": {
+          "recent_badge_names": [
+            "International Women's Day 2026",
+            "indoor 50k ride",
+            "Winter Solstice Festival 2025",
+            "Halloween 2025",
+            "Stepping Up 20K"
+          ],
+          "has_recent_milestone_badge": true,
+          "badge_count_recent": 10
+        }
+      }
+    ]
+  },
+  "llm_payload": {
+    "message_type": "weekly_report",
+    "user_name": "李丛至",
+    "length_target": "450-700字，最多700字",
+    "overall_summary": "这周整体状态比较平稳，恢复和训练的匹配度还可以。",
+    "recovery_summary": "恢复端看，平均睡眠 450.29 分钟，平均睡眠评分 78.43，平均 HRV 42.0，起床 body battery 大致在 95.29。",
+    "training_rhythm_summary": "训练端看，这周一共 4 次，总时长 352.0 分钟，总训练压力 172.4，主要项目还是 road_biking。",
+    "notable_change": "这周最值得注意的是，系统已经能开始把恢复和训练节奏放在一起看，而不是单点看数据。",
+    "next_week_advice": "下周建议继续把恢复和训练一起安排，别连续堆高强度日。",
+    "key_metrics": {
+      "avg_sleep_min": 450.29,
+      "avg_sleep_score": 78.43,
+      "avg_hrv": 42.0,
+      "avg_body_battery_at_wake": 95.29,
+      "activity_count": 4,
+      "total_duration_min": 352.0,
+      "total_training_stress_score": 172.4,
+      "avg_training_stress_score": 43.1,
+      "common_sport_type": "road_biking"
+    }
+  },
+  "final_message": "李丛至，你的周报来了。\n这周整体状态比较平稳，恢复和训练的匹配度还可以。\n\n先看看恢复这边。\n你这周平均每晚睡了7个半小时左右，睡眠质量评分维持在78-79分，这个分数意味着你的睡眠整体还是深度的、连续的。\n反映在身体指标上，周平均HRV平衡在42，早上起床时身体电量（body battery）基本都能充到90多，这些都给了你一个不错的启动基础量。简单说，你的睡眠在为你白天的活动“充电”这件事上，做得挺到位的。\n\n再看你周中的骑行训练节奏。\n一共进行了4次骑行，总时长接近6个小时，总训练压力值（TSS）为172，单看这个总量属于一个适度推进的范围，没有过载。\n更重要的是，活动安排得比较平均，没有出现连续两三天高烈度训练的情况，这让身体有了缓冲空间，避免了过度疲劳的堆积。这种“练一练、缓一缓”的节奏，和你前面说的良好恢复状况是相辅相成的。\n\n这周我发现一个很好的趋势，那就是系统已经开始把“恢复”和“训练”这两个维度放在一起对比观察了，而不再是孤立地看某个单一数据。\n这意味着我们判断你状态的视角，从“你练得够不够”，升级到了“你练完后恢复得怎么样”，后者对你的长期进步和避免伤病其实更关键。\n能从“点”看到“面”，这是一个积极的信号。\n\n针对这个观察重点，下周我的建议很明确：\n继续保持这种“恢复”与“训练”一起安排的思路。\n具体操作上，就是像这周一样，**切忌连续安排两天的中高强度训练日**。如果你计划一次较大强度的骑行，那么前一天要确保睡眠，后一天则安排一些轻松的活动或者完全休息，给身体足够的时间去修复和适应。\n这样，你的每一次训练才能转化为实打实的进步，而不是疲劳的堆积。\n\n这周的节奏维持得不错，下周继续！"
+}

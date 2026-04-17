@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyc
+*.pyd
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# 备份文件
+*.bak
+*.bak_*
+
+# 运行时状态（不需要版本控制）
+state/
+logs/
+data/
+debug/
+
+# Token 缓存（敏感）
+tokens/
+
+# 系统文件
+.DS_Store
+*.swp
+*.swo
