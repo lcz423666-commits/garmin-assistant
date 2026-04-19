@@ -8,7 +8,6 @@ if str(APP_DIR) not in sys.path:
 
 import report_flow
 
-Path('/root/garmin_assistant/data/WangZZ').mkdir(parents=True, exist_ok=True)
 assert report_flow.resolve_user_id('丛至') == 'congzhi'
-assert report_flow.resolve_user_id('WangZZ') == 'WangZZ'
+assert report_flow.resolve_user_id('RegressionUser') == 'RegressionUser'
 print('ok')

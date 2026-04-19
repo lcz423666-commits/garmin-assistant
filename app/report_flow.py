@@ -741,6 +741,38 @@ def generate_new_morning_report(api: Any, source_name: str, display_name: str, d
 
     user_prompt = build_morning_prompt(analysis_result)
     message = call_custom_llm(NEW_MORNING_SYSTEM_PROMPT, user_prompt, push_type='morning')
+
+    # Extract goals and log observation for 丛至 only
+    if display_name == '丛至':
+        try:
+            import sys
+            import os
+            sys.path.insert(0, os.path.dirname(__file__))
+            from goal_tracker import extract_goals_from_text, save_goals, append_observation
+            goals = extract_goals_from_text(message, '佳明晨报')
+            save_goals(goals)
+            today_metrics = analysis_result.get('today_metrics') or {}
+            obs_parts = []
+            bb = today_metrics.get('body_battery_start') or today_metrics.get('body_battery')
+            if bb:
+                obs_parts.append(f'BB={bb}')
+            deep_sleep = today_metrics.get('deep_sleep_minutes')
+            if deep_sleep:
+                obs_parts.append(f'深睡{deep_sleep}min')
+            rem = today_metrics.get('rem_sleep_minutes')
+            if rem:
+                obs_parts.append(f'REM={rem}min')
+            hrv = today_metrics.get('hrv_last_night') or today_metrics.get('hrv')
+            if hrv:
+                obs_parts.append(f'HRV={hrv}')
+            rhr = today_metrics.get('resting_heart_rate')
+            if rhr:
+                obs_parts.append(f'静息HR={rhr}')
+            if obs_parts:
+                append_observation('，'.join(obs_parts), '佳明晨报')
+        except Exception:
+            pass
+
     llm_payload = {
         'message_type': 'sleep_morning_v2',
         'user_id': user_id,

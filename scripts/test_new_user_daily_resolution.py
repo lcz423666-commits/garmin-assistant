@@ -12,6 +12,6 @@ if str(ROOT / 'app') not in sys.path:
 
 import daily_snapshot  # noqa: E402
 
-user = daily_snapshot.resolve_user('WangZZ')
-assert user['name'] == 'WangZZ', user
+user = daily_snapshot.resolve_user('jyf')
+assert user['name'] == 'jyf', user
 print('ok')

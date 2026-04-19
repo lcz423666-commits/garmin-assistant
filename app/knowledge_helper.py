@@ -137,9 +137,23 @@ def build_system_prompt(push_type: str, activity_type: str | None = None, base_p
         category = get_activity_category(activity_type or '')
         if category == 'cycling':
             primary = load_knowledge('cycling.md')
+            training_plan = load_knowledge_section(
+                'cycling_training_plan.md',
+                [
+                    '二、PMC（表现管理图）核心框架',
+                    '三、负荷增长与 rampRate 规则',
+                    '九、训练计划生成规则（LLM 使用本节）',
+                    '十一、业余训练时间档位模板',
+                    '十二、结构化课表处方库',
+                    '十三、HRV 指导训练决策树',
+                    '十四、室内外功率校准与通勤负荷',
+                    '十五、业余常见错误与纠正',
+                    '十六、本知识库使用导航（给 AI 训练建议模型）',
+                ]
+            )
             secondary = load_knowledge_section('sleep_health.md', ACTIVITY_SLEEP_SECTIONS)
-            knowledge = primary + '\n\n' + secondary
-            knowledge_files = ['cycling.md', 'sleep_health.md#训练状态+VO2Max+训练准备度']
+            knowledge = primary + '\n\n' + training_plan + '\n\n' + secondary
+            knowledge_files = ['cycling.md', 'cycling_training_plan.md#PMC+rampRate+计划生成+业余档位+课表库+HRV决策+校准+常见错误+导航', 'sleep_health.md#训练状态+VO2Max+训练准备度']
         elif category == 'trail_running':
             primary = load_knowledge('trail_running.md')
             secondary = load_knowledge_section('sleep_health.md', ACTIVITY_SLEEP_SECTIONS)

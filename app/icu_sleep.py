@@ -190,10 +190,50 @@ def _request_json(url: str, *, api_key: str, params=None, log_func=None):
     raise last_error
 
 
-def _build_analysis_prompt(payload: dict) -> str:
-    return (
+def _format_sleep_observation(payload: dict) -> str:
+    sleep = payload.get("sleep", {})
+    hrv = payload.get("hrv", {})
+    cardio = payload.get("cardiovascular_recovery", {})
+    training = payload.get("training_load_context", {})
+    tsb = payload.get("tsb")
+    parts = []
+    sleep_secs = sleep.get("sleepSecs")
+    if sleep_secs:
+        h = int(sleep_secs // 3600)
+        m = int((sleep_secs % 3600) // 60)
+        parts.append(f"睡眠{h}h{m}m")
+    if sleep.get("sleepScore"):
+        parts.append(f"评分{sleep['sleepScore']}")
+    if hrv.get("rMSSD"):
+        parts.append(f"rMSSD={hrv['rMSSD']}")
+    if cardio.get("restingHR"):
+        parts.append(f"静息HR={cardio['restingHR']}")
+    if tsb is not None:
+        parts.append(f"TSB={tsb}")
+    if training.get("rampRate"):
+        parts.append(f"rampRate={training['rampRate']}")
+    return "，".join(parts)
+
+
+def _build_analysis_prompt(
+    payload: dict,
+    pending_goals: list | None = None,
+    profile_summary: str = "",
+) -> str:
+    base = (
         "你是一位运动恢复专家，根据以下 Intervals.icu 健康数据分析用户的睡眠和恢复状况。\n\n"
         f"数据：\n{json.dumps(payload, ensure_ascii=False, indent=2)}\n\n"
+    )
+    if profile_summary:
+        base += f"用户长期画像（供参考，不必逐条提及）：\n{profile_summary}\n\n"
+    if pending_goals:
+        goals_text = "\n".join(
+            f"- [{g.get('source', '')}] {g.get('goal', '')}" for g in pending_goals
+        )
+        base += (
+            f"昨日制定的今日计划（请在建议部分自然融入，评估执行方向是否正确）：\n{goals_text}\n\n"
+        )
+    base += (
         "要求：\n"
         "1. 用北京时间问候，语气像朋友，自然口语化\n"
         "2. 内容分四部分但不要加标题，自然过渡：\n"
@@ -201,21 +241,27 @@ def _build_analysis_prompt(payload: dict) -> str:
         "   - HRV 分析（rMSSD 水平解读、与个人基线对比趋势、SDNN 补充说明、Baevsky 压力指数如果异常则提醒）\n"
         "   - 训练-恢复平衡（结合 CTL/ATL/TSB/rampRate 分析：负荷增速是否过快、疲劳积累程度、当前状态是否适合训练）\n"
         "   - 今日恢复建议（根据 TSB 和 HRV 给出具体建议：该休息/轻松骑/可以上强度）\n"
-        "3. 如果有主观评估数据（soreness/fatigue/mood），结合分析\n"
-        "4. 禁止使用 markdown 加粗语法\n"
-        "5. 控制在 300 字以内\n"
-        "6. 这是独立于佳明睡眠推送的补充分析，侧重 HRV 和训练负荷关联，不要重复基础睡眠信息\n"
+        "3. 如果有昨日计划，在建议部分自然融入「你昨天计划了X，结合今天数据来看……」\n"
+        "4. 如果有主观评估数据（soreness/fatigue/mood），结合分析\n"
+        "5. 禁止使用 markdown 加粗语法\n"
+        "6. 控制在 350 字以内\n"
+        "7. 这是独立于佳明睡眠推送的补充分析，侧重 HRV 和训练负荷关联，不要重复基础睡眠信息\n"
     )
+    return base
 
 
-def _generate_analysis(payload: dict):
+def _generate_analysis(
+    payload: dict,
+    pending_goals: list | None = None,
+    profile_summary: str = "",
+):
     from llm_helper import LLM_MODEL, client
 
     response = client.chat.completions.create(
         model=LLM_MODEL,
         messages=[
             {"role": "system", "content": "你是一位运动恢复专家。"},
-            {"role": "user", "content": _build_analysis_prompt(payload)},
+            {"role": "user", "content": _build_analysis_prompt(payload, pending_goals, profile_summary)},
         ],
     )
     return (response.choices[0].message.content or "").strip()
@@ -286,10 +332,27 @@ def check_and_push_sleep(*, user=None, test: bool = False, log_func=None) -> boo
         _log(f"ICU 睡眠日期 {payload.get('date')} 已推送过，跳过", log_func)
         return False
 
-    analysis = _generate_analysis(payload)
+    # Load today's pending goals and user profile for richer analysis
+    pending_goals: list = []
+    profile_summary: str = ""
+    try:
+        import sys
+        import os
+        sys.path.insert(0, os.path.dirname(__file__))
+        from goal_tracker import get_pending_goals
+        from user_profile import profile_summary_for_prompt
+        pending_goals = get_pending_goals()
+        profile_summary = profile_summary_for_prompt()
+    except Exception as exc:
+        _log(f"加载目标/画像失败（不影响推送）: {exc}", log_func)
+
+    analysis = _generate_analysis(payload, pending_goals, profile_summary)
 
     if test:
         print(json.dumps(payload, ensure_ascii=False, indent=2))
+        print("\n=== Pending Goals ===\n")
+        import json as _json
+        print(_json.dumps(pending_goals, ensure_ascii=False, indent=2))
         print("\n=== ICU Sleep Message ===\n")
         print(analysis)
         return False
@@ -302,6 +365,16 @@ def check_and_push_sleep(*, user=None, test: bool = False, log_func=None) -> boo
                 "updated_at": datetime.now(BJ_TZ).isoformat(),
             }
         )
+        # Extract forward-looking goals from analysis and log observation
+        try:
+            from goal_tracker import extract_goals_from_text, save_goals, append_observation
+            goals = extract_goals_from_text(analysis, "ICU睡眠分析")
+            save_goals(goals)
+            if goals:
+                _log(f"提取到 {len(goals)} 条目标计划", log_func)
+            append_observation(_format_sleep_observation(payload), "ICU睡眠分析")
+        except Exception as exc:
+            _log(f"目标提取/观察记录失败（不影响推送）: {exc}", log_func)
     return pushed
 
 

@@ -189,6 +189,19 @@ def save_health_runtime(payload):
         json.dump(payload, file, ensure_ascii=False, indent=2)
 
 
+def prune_health_runtime_users(payload, enabled_users):
+    if not isinstance(enabled_users, list):
+        return
+    per_user = payload.setdefault("per_user", {})
+    if not isinstance(per_user, dict):
+        payload["per_user"] = {}
+        return
+    active_names = {str(name) for name in enabled_users if str(name)}
+    for user_name in list(per_user.keys()):
+        if user_name not in active_names:
+            per_user.pop(user_name, None)
+
+
 def update_health_runtime(*, root_updates=None, user_updates=None):
     payload = load_health_runtime()
     if root_updates:
@@ -198,6 +211,8 @@ def update_health_runtime(*, root_updates=None, user_updates=None):
         for user_name, updates in user_updates.items():
             user_payload = per_user.setdefault(user_name, {})
             user_payload.update(updates)
+    if root_updates and "enabled_users" in root_updates:
+        prune_health_runtime_users(payload, root_updates.get("enabled_users"))
     payload["updated_at"] = bj_now().isoformat()
     save_health_runtime(payload)
     return payload
