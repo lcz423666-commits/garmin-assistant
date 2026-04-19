@@ -1143,6 +1143,26 @@ def check_and_push_cycling(*, user=None, test: bool = False, log_func=None) -> b
                 "updated_at": datetime.now(BJ_TZ).isoformat(),
             }
         )
+        # 保存分析内容到文件，供网页报告页读取
+        try:
+            save_dir = Path("/root/garmin_assistant/data/congzhi/icu_cycling")
+            save_dir.mkdir(parents=True, exist_ok=True)
+            ride_date = activity_date if isinstance(activity_date, str) else str(activity_date)
+            save_path = save_dir / f"{ride_date}_{activity_id}.json"
+            save_path.write_text(
+                json.dumps({
+                    "activity_id": activity_id,
+                    "date": ride_date,
+                    "saved_at": datetime.now(BJ_TZ).isoformat(),
+                    "title": detail_payload.get("name", "") if isinstance(detail_payload, dict) else "",
+                    "content": analysis,
+                    "ride_data": payload.get("ride_data", {}),
+                }, ensure_ascii=False, indent=2),
+                encoding="utf-8"
+            )
+        except Exception as save_err:
+            if log_func:
+                log_func(f"ICU 骑行分析保存失败（不影响推送）: {save_err}")
     return pushed
 
 

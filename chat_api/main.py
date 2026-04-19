@@ -97,15 +97,17 @@ async def chat(req: ChatRequest):
 
 @app.get("/api/status")
 async def status():
-    """返回今日健康快照（JSON），供前端首页卡片展示。"""
+    """返回今日健康快照（ICU 优先），供前端首页卡片展示。"""
     from datetime import date, timedelta
-    from data_loader import load_daily, _extract_key_metrics
+    from data_loader import load_daily, _extract_key_metrics, load_icu_sleep_latest, _extract_icu_sleep_metrics
     today = date.today()
     today_data = load_daily(today) or load_daily(today - timedelta(days=1))
-    if not today_data:
-        return {"metrics": {}, "date": str(today)}
-    metrics = _extract_key_metrics(today_data)
-    return {"metrics": metrics, "date": str(today)}
+    metrics = _extract_key_metrics(today_data or {})
+    icu_date = str(today)
+    icu_raw = load_icu_sleep_latest(days=2)
+    if icu_raw:
+        icu_date = icu_raw.get("date", str(today))
+    return {"metrics": metrics, "date": icu_date or str(today)}
 
 
 @app.get("/api/reports")
@@ -115,9 +117,9 @@ async def reports(days: int = 30):
 
 
 @app.get("/api/reports/{report_date}")
-async def report_detail(report_date: str):
-    """返回指定日期报告详情。"""
-    detail = load_report_detail(report_date)
+async def report_detail(report_date: str, type: str = ""):
+    """返回指定日期报告详情，type 可为 icu_sleep / icu_cycling / garmin。"""
+    detail = load_report_detail(report_date, report_type=type)
     if not detail:
         raise HTTPException(status_code=404, detail="报告不存在")
     return detail

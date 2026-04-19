@@ -365,6 +365,23 @@ def check_and_push_sleep(*, user=None, test: bool = False, log_func=None) -> boo
                 "updated_at": datetime.now(BJ_TZ).isoformat(),
             }
         )
+        # 保存 ICU 睡眠数据和分析内容，供网页报告页读取
+        try:
+            save_dir = Path("/root/garmin_assistant/data/congzhi/icu_sleep")
+            save_dir.mkdir(parents=True, exist_ok=True)
+            sleep_date = payload.get("date", datetime.now(BJ_TZ).strftime("%Y-%m-%d"))
+            save_path = save_dir / f"{sleep_date}.json"
+            save_path.write_text(
+                json.dumps({
+                    "date": sleep_date,
+                    "saved_at": datetime.now(BJ_TZ).isoformat(),
+                    "payload": payload,
+                    "content": analysis,
+                }, ensure_ascii=False, indent=2),
+                encoding="utf-8"
+            )
+        except Exception as save_err:
+            _log(f"ICU 睡眠数据保存失败（不影响推送）: {save_err}", log_func)
         # Extract forward-looking goals from analysis and log observation
         try:
             from goal_tracker import extract_goals_from_text, save_goals, append_observation
