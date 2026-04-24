@@ -22,11 +22,9 @@ if str(APP_DIR) not in sys.path:
 
 import garmin_monitor as gm  # noqa: E402
 
-USER_TARGETS = [
-    {'source_name': '丛至', 'user_id': 'congzhi', 'display_name': '李丛至', 'garmin_email': '645042220@qq.com'},
-    {'source_name': '杨', 'user_id': 'yang', 'display_name': '杨', 'garmin_email': 'yangqihao@vip.qq.com'},
-    {'source_name': 'Kevin', 'user_id': 'kevin', 'display_name': 'Kevin', 'garmin_email': '656727039@qq.com'},
-]
+# Optional local-only overrides, for example:
+# {'source_name': 'example-user', 'user_id': 'example_user', 'display_name': 'Example'}
+USER_TARGETS: list[dict[str, str]] = []
 
 SKIN_TEMPERATURE_ENDPOINTS = [
     '/wellness-service/wellness/daily/skinTemp/{date}',
@@ -84,12 +82,19 @@ def bj_now() -> datetime:
 def ensure_layout() -> None:
     REPORTS_DIR.mkdir(parents=True, exist_ok=True)
     SCRIPTS_DIR.mkdir(parents=True, exist_ok=True)
-    for target in USER_TARGETS:
-        (DATA_DIR / target['user_id'] / 'daily').mkdir(parents=True, exist_ok=True)
 
 
 def load_target_users() -> list[dict[str, Any]]:
     users = gm.load_users()
+    if not USER_TARGETS:
+        resolved = []
+        for user in users:
+            user = deepcopy(user)
+            user['_probe_user_id'] = str(user.get('name') or 'user')
+            user['_probe_display_name'] = str(user.get('name') or 'user')
+            resolved.append(user)
+        return resolved
+
     by_name = {user['name']: deepcopy(user) for user in users}
     resolved = []
     for target in USER_TARGETS:

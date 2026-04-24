@@ -9,6 +9,7 @@ __pycache__/
 dist/
 build/
 .eggs/
+.venv/
 
 # 备份文件
 *.bak
@@ -44,11 +45,19 @@ charts/
 app/*.out
 
 # 敏感配置（含API key和账号密码）
+.env
+.env.*
+!.env.example
 config/system.json
 config/users.json
+config/*.local.json
 
-# 前端构建产物（由服务器直接管理）
-/var/www/
+# 本地接管原始备份（含真实健康数据和凭据）
+_server_backup/
+
+# 本地编辑器/系统文件
+.idea/
+.vscode/
 
 # 报告和临时文件
 reports/

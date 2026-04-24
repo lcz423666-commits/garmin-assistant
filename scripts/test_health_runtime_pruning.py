@@ -2,16 +2,41 @@
 from __future__ import annotations
 
 import json
+import os
 import sys
 import tempfile
 from pathlib import Path
 
 
-APP_DIR = Path("/root/garmin_assistant/app")
+ROOT = Path(__file__).resolve().parents[1]
+APP_DIR = ROOT / "app"
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
 if str(APP_DIR) not in sys.path:
     sys.path.insert(0, str(APP_DIR))
 
-import garmin_monitor as gm  # noqa: E402
+with tempfile.TemporaryDirectory() as config_root:
+    root = Path(config_root)
+    (root / "config").mkdir(parents=True, exist_ok=True)
+    (root / "config" / "system.json").write_text(
+        json.dumps(
+            {
+                "monitor": {
+                    "state_dir": str(root / "state"),
+                    "pid_file": str(root / "state" / "garmin_monitor.pid"),
+                    "token_base_dir": str(root / "tokens"),
+                },
+                "storage": {"data_root": str(root / "data")},
+                "feishu": {},
+                "pushplus": {},
+                "llm": {},
+            }
+        ),
+        encoding="utf-8",
+    )
+    (root / "config" / "users.json").write_text('{"users":[]}', encoding="utf-8")
+    os.environ["GARMIN_ASSISTANT_ROOT"] = str(root)
+    import garmin_monitor as gm  # noqa: E402
 
 
 def main() -> int:
