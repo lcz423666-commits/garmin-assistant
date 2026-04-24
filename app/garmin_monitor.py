@@ -2567,6 +2567,10 @@ def run_user_cycle(client, user, display_name, state):
     icu_sleep_pushed = False
     if user.get("name") == "丛至":
         try:
+            import importlib
+            import icu_cycling, icu_sleep
+            importlib.reload(icu_cycling)
+            importlib.reload(icu_sleep)
             from icu_cycling import check_and_push_cycling
             from icu_sleep import check_and_push_sleep
 

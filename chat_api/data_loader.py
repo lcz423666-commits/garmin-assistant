@@ -404,48 +404,43 @@ def load_reports_list(days: int = 30) -> list[dict]:
 
 
 def load_report_detail(target_date: str, report_type: str = "") -> dict | None:
-    """返回指定日期报告的详细内容。"""
+    """返回指定日期报告的详细内容，合并当天所有来源的推送内容。"""
+    push_messages = []
+    include_all = not report_type
+
     # ICU 睡眠
-    if report_type == "icu_sleep" or not report_type:
+    if include_all or report_type == "icu_sleep":
         raw = load_icu_sleep_by_date(target_date)
         if raw and raw.get("content"):
-            return {
-                "date": target_date,
-                "type": "icu_sleep",
-                "conclusion": "",
-                "push_messages": [{"content": raw["content"], "message_type": "ICU 睡眠分析"}],
-            }
+            push_messages.append({"content": raw["content"], "message_type": "ICU 睡眠分析"})
 
-    # ICU 骑行
-    if report_type == "icu_cycling":
-        for f in ICU_CYCLING_DIR.glob(f"{target_date}_*.json") if ICU_CYCLING_DIR.exists() else []:
-            raw = _read_json(f)
-            if raw:
-                return {
-                    "date": target_date,
-                    "type": "icu_cycling",
-                    "conclusion": raw.get("title", ""),
-                    "push_messages": [{"content": raw.get("content", ""), "message_type": "ICU 骑行分析"}],
-                }
+    # ICU 骑行（一天可能有多条）
+    if include_all or report_type == "icu_cycling":
+        if ICU_CYCLING_DIR.exists():
+            for f in sorted(ICU_CYCLING_DIR.glob(f"{target_date}_*.json")):
+                raw = _read_json(f)
+                if raw and raw.get("content"):
+                    push_messages.append({"content": raw["content"], "message_type": raw.get("title", "ICU 骑行分析")})
 
     # Garmin 日报
-    json_path = REPORTS_DIR / f"{target_date}.json"
-    md_path = REPORTS_DIR / f"{target_date}.md"
-    raw = _read_json(json_path)
-    if raw:
-        all_msgs = raw.get("all_push_messages") or []
-        mine = [m for m in all_msgs if m.get("user") == DISPLAY_NAME]
-        return {
-            "date": target_date,
-            "type": "garmin",
-            "conclusion": _congzhi_first_line(raw),
-            "push_messages": mine,
-        }
-    if md_path.exists():
-        return {
-            "date": target_date,
-            "type": "garmin",
-            "conclusion": "",
-            "push_messages": [{"content": md_path.read_text(encoding="utf-8")}],
-        }
-    return None
+    if include_all or report_type == "garmin":
+        json_path = REPORTS_DIR / f"{target_date}.json"
+        md_path = REPORTS_DIR / f"{target_date}.md"
+        raw = _read_json(json_path)
+        if raw:
+            all_msgs = raw.get("all_push_messages") or []
+            mine = [m for m in all_msgs if m.get("user") == DISPLAY_NAME]
+            push_messages.extend(mine)
+        elif md_path.exists():
+            push_messages.append({"content": md_path.read_text(encoding="utf-8")})
+
+    if not push_messages:
+        return None
+
+    return {
+        "date": target_date,
+        "type": report_type or "combined",
+        "conclusion": "",
+        "push_messages": push_messages,
+    }
+

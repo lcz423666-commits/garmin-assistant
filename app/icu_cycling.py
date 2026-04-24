@@ -187,6 +187,49 @@ def extract_work_intervals(detail: dict) -> list[dict]:
     return intervals
 
 
+GARMIN_ACTIVITY_DIR = Path("/root/garmin_assistant/data/丛至/activity")
+
+
+def _enrich_cycling_with_garmin(activity_date: str) -> dict:
+    """从 Garmin activity JSON 补充 ICU 没有的字段：TE分数、恢复时间、预生成点评。"""
+    if not GARMIN_ACTIVITY_DIR.exists():
+        return {}
+    # 按日期匹配（Garmin 和 ICU 的 activity ID 不同，用日期对应）
+    for p in GARMIN_ACTIVITY_DIR.iterdir():
+        try:
+            d = json.load(open(p))
+            nd = d.get("normalized_data", {})
+            if nd.get("basic_activity", {}).get("date") != activity_date:
+                continue
+            lr = nd.get("load_recovery", {})
+            sp = nd.get("sport_specific", {})
+            ba = nd.get("basic_activity", {})
+            result = {}
+            # 训练效果
+            if lr.get("aerobic_te") is not None:
+                result["aerobic_te"] = lr["aerobic_te"]
+            if lr.get("anaerobic_te") is not None:
+                result["anaerobic_te"] = lr["anaerobic_te"]
+            if lr.get("training_effect_label"):
+                result["te_label"] = lr["training_effect_label"]
+            if lr.get("estimated_recovery_time"):
+                result["recovery_time_hrs"] = lr["estimated_recovery_time"]
+            # Garmin 预生成点评（直接喂给 LLM，省去推导）
+            for note_key in ["pacing_trend", "hr_power_relation_note", "power_variability_note",
+                             "left_right_balance_note", "cadence_note"]:
+                if sp.get(note_key):
+                    result[note_key] = sp[note_key]
+            # 其他补充字段
+            if sp.get("max_20min_power"):
+                result["max_20min_power"] = sp["max_20min_power"]
+            if ba.get("avg_hr"):
+                result["garmin_avg_hr"] = ba["avg_hr"]
+            return result
+        except Exception:
+            continue
+    return {}
+
+
 def extract_ride_data(activity: dict) -> dict:
     icu_ctl = _pick(activity, "icu_ctl", "ctl")
     icu_atl = _pick(activity, "icu_atl", "atl")
@@ -899,6 +942,7 @@ def _build_analysis_prompt(payload: dict) -> str:
     wellness_data = payload["wellness_data"]
     story_points = payload.get("story_points") or {"高功率段": [], "脱钩点": [], "衰减段": "无数据"}
     weather_analysis = payload.get("weather_analysis")
+    garmin_supplement = payload.get("garmin_supplement") or {}
 
     weather_section = ""
     if weather_analysis and isinstance(weather_analysis, dict) and weather_analysis.get("总段数", 0) > 0:
@@ -911,7 +955,7 @@ def _build_analysis_prompt(payload: dict) -> str:
         weather_prompt_part = (
             "第三部分 · 天气与环境影响分析（3-4句，仅当有 weather_analysis 数据时写）\n"
             "根据传入的天气分析数据，综合评估本次骑行的气象环境对表现的影响。必须遵守：\n"
-            "- 先说整体气象背景（温度、湿度、天气状况），判断环境是否对表现有明显正面或负面影响\n"
+            "- 先说整体气象背景，必须使用数据中的【气温范围_C】区间（如"气温从X°C升至Y°C"），绝对不能只说单一温度值；若数据仅有平均值则说"均温约X°C"\n"
             "- 如果气温偏高（>28°C）或湿度偏高（>75%），要说明其对心率漂移、体感疲劳和散热的影响\n"
             "- 如果体感温度和实际温度差距明显（>3°C），要说明原因（热浪、大风）\n"
             "- 说明整体风力情况：哪些路段是顺风/逆风/侧风，风速是否显著（>15 km/h 才值得单独点出）\n"
@@ -934,7 +978,9 @@ def _build_analysis_prompt(payload: dict) -> str:
         f"间歇段数据（补充参考）：\n{json.dumps(work_intervals, ensure_ascii=False, indent=2) if work_intervals else '本次骑行无结构化间歇段'}\n\n"
         f"运动员当日状态：\n{json.dumps(wellness_data, ensure_ascii=False, indent=2)}\n\n"
         f"story_points（拐点故事点）：\n{json.dumps(story_points, ensure_ascii=False, indent=2)}"
-        f"{weather_section}\n"
+        f"{weather_section}"
+        + (f"\nGarmin 补充数据（训练效果评分 + 预生成点评）：\n{json.dumps(garmin_supplement, ensure_ascii=False, indent=2)}\n" if garmin_supplement else "\n")
+        + "\n"
         "请按以下结构输出分析，每部分自然过渡不加标题，语气像一个懂训练的骑行朋友，专业但不学术：\n\n"
         "第一部分 · 骑行概况与整体判断（2-3句）\n"
         "基于距离、爬升、时长，给出这次骑行的整体定性判断。\n\n"
@@ -952,7 +998,10 @@ def _build_analysis_prompt(payload: dict) -> str:
         "注意：如果输出中漏掉任何一个传入的地名，视为失败。\n\n"
         f"{load_part_number} · 训练负荷与训练阶段评估（4-5句）\n"
         "基于 TSS、TSB、CTL、ATL、rampRate 和 VO2Max 给出训练阶段判断标签，并解释当前所处状态。\n\n"
-        f"{advice_part_number} · 接下来 24-48 小时训练建议（3-4句）\n"
+        + ("如果 garmin_supplement 中有 aerobic_te / anaerobic_te，在功率分析或建议部分自然引用"
+           "（如「有氧训练效果 3.2，说明本次骑行对有氧系统有实质刺激」）；"
+           "如有预生成点评（pacing_trend/hr_power_relation_note 等），可以作为分析依据引用，但要用自己的话重新表达，不要原文照搬。\n\n")
+        + f"{advice_part_number} · 接下来 24-48 小时训练建议（3-4句）\n"
         "给具体可执行建议，不要只说注意休息。结合 TSB、rampRate 和心率恢复判断是完全休息、恢复骑、正常训练还是可以上强度。\n\n"
         "整体要求：\n"
         "- 用北京时间问候开头\n"
@@ -1112,12 +1161,14 @@ def check_and_push_cycling(*, user=None, test: bool = False, log_func=None) -> b
         activity_date=activity_date,
         log_func=log_func,
     )
+    garmin_supplement = _enrich_cycling_with_garmin(activity_date)
     payload = {
         "ride_data": replace_none_with_no_data(ride_data),
         "work_intervals": replace_none_with_no_data(extract_work_intervals(detail_payload)),
         "wellness_data": replace_none_with_no_data(extract_wellness_data(wellness_raw)),
         "story_points": replace_none_with_no_data(story_points_raw),
         "weather_analysis": replace_none_with_no_data(weather_analysis_raw) if weather_analysis_raw else None,
+        "garmin_supplement": garmin_supplement if garmin_supplement else None,
     }
     analysis = _generate_analysis(payload)
 
