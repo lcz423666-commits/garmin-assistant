@@ -1,0 +1,16 @@
+[Unit]
+Description=Garmin Health Chat API
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/root/garmin_assistant
+Environment=GARMIN_ASSISTANT_ROOT=/root/garmin_assistant
+Environment=PYTHONPATH=/root/garmin_assistant/app:/root/garmin_assistant/chat_api
+ExecStart=/usr/bin/python3 -m uvicorn chat_api.main:app --host 127.0.0.1 --port 8100
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

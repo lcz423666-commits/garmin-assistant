@@ -1,0 +1,24 @@
+{
+  "users": [
+    {
+      "name": "example-user",
+      "garmin_email": "user@example.com",
+      "garmin_password": "replace-with-garmin-password",
+      "garmin_is_cn": false,
+      "push_mode": "self",
+      "pushplus_token": "replace-with-user-pushplus-token",
+      "friend_token": null,
+      "enabled": true
+    },
+    {
+      "name": "example-friend-user",
+      "garmin_email": "8613800000000",
+      "garmin_password": "replace-with-garmin-password",
+      "garmin_is_cn": true,
+      "push_mode": "friend",
+      "pushplus_token": null,
+      "friend_token": "replace-with-friend-token",
+      "enabled": false
+    }
+  ]
+}

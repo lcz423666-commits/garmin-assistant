@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>GARMIN · 健康助手</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<style>
+:root{--bg:#0c1419;--surface:#131e27;--surface2:#1a2c38;--surface3:#213546;--accent:#b8f050;--accent-dim:rgba(184,240,80,0.12);--accent-glow:rgba(184,240,80,0.35);--sky:#38c5f5;--sky-dim:rgba(56,197,245,0.12);--text:#e2eff8;--text-muted:#6a8fa5;--text-dim:#3d607a;--border:rgba(255,255,255,0.07);--border-hi:rgba(184,240,80,0.28)}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;font-size:15px;line-height:1.6}
+::-webkit-scrollbar{width:3px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--surface3);border-radius:2px}
+.fd{font-family:'Barlow Condensed',sans-serif}.fm{font-family:'JetBrains Mono',monospace}
+#app{display:flex;flex-direction:column;height:100%;max-width:480px;margin:0 auto}
+header{background:var(--surface);border-bottom:1px solid var(--border);padding:11px 16px;display:flex;align-items:center;gap:10px;flex-shrink:0}
+.logo-mark{width:28px;height:28px;border-radius:8px;background:var(--accent);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+nav{display:flex;background:var(--surface);border-bottom:1px solid var(--border);flex-shrink:0}
+.tab-btn{flex:1;padding:12px 8px 10px;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;border-bottom:2px solid transparent;color:var(--text-muted);font-family:'Barlow Condensed',sans-serif;font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;transition:all .2s;user-select:none}
+.tab-btn svg{width:19px;height:19px;stroke-width:1.8}
+.tab-btn.active{color:var(--accent);border-bottom-color:var(--accent)}
+main{flex:1;overflow:hidden;display:flex;flex-direction:column}
+.page{display:none;height:100%;flex-direction:column}.page.active{display:flex}
+.scroll-area{flex:1;overflow-y:auto;overscroll-behavior:contain}
+#messages{padding:16px;display:flex;flex-direction:column;gap:14px}
+.msg-ai,.msg-user{display:flex;gap:10px;align-items:flex-start}.msg-user{flex-direction:row-reverse}
+.av{width:32px;height:32px;border-radius:10px;flex-shrink:0;display:flex;align-items:center;justify-content:center;margin-top:2px}
+.av-ai{background:var(--accent-dim);border:1px solid var(--border-hi)}.av-me{background:var(--accent)}
+.bubble{padding:12px 15px;border-radius:4px 18px 18px 18px;font-size:13.5px;max-width:calc(100% - 48px)}
+.msg-ai .bubble{background:var(--surface2);border:1px solid var(--border)}
+.msg-user .bubble{background:var(--accent);color:#0c1419;border-radius:18px 4px 18px 18px;font-size:14px}
+.bubble p{margin-bottom:.5em}.bubble p:last-child{margin-bottom:0}
+.bubble ul{list-style:none;padding:0;margin:.5em 0}
+.bubble ul li{padding-left:1.2em;position:relative;margin-bottom:.25em}
+.bubble ul li::before{content:'·';position:absolute;left:.3em;color:var(--accent);font-weight:700}
+.bubble strong{color:var(--accent);font-weight:600}
+.bubble code{font-family:'JetBrains Mono',monospace;font-size:.82em;background:var(--surface3);padding:.1em .4em;border-radius:4px;color:var(--sky)}
+.bubble h3{font-family:'Barlow Condensed',sans-serif;font-size:1.05em;letter-spacing:.05em;text-transform:uppercase;color:var(--accent);margin:.7em 0 .3em}
+@keyframes tbar{0%,80%,100%{transform:scaleY(.35);opacity:.25}40%{transform:scaleY(1);opacity:1}}
+.tbar{width:3px;height:16px;background:var(--accent);border-radius:2px;animation:tbar 1.2s ease-in-out infinite}
+.tbar:nth-child(2){animation-delay:.15s}.tbar:nth-child(3){animation-delay:.3s}
+@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+.spin{animation:spin .9s linear infinite;display:block}
+#chips-row{display:flex;gap:8px;padding:10px 14px;overflow-x:auto;flex-shrink:0;scrollbar-width:none}
+#chips-row::-webkit-scrollbar{display:none}
+.chip{flex-shrink:0;background:var(--surface2);border:1px solid var(--border);border-radius:100px;padding:6px 13px;font-size:12px;cursor:pointer;color:var(--text-muted);white-space:nowrap;transition:all .2s}
+.chip:hover{border-color:var(--border-hi);color:var(--accent)}
+.input-wrap{padding:10px 14px 14px;padding-bottom:max(14px,env(safe-area-inset-bottom));flex-shrink:0;background:var(--bg)}
+.input-box{display:flex;align-items:flex-end;gap:10px;background:var(--surface2);border:1px solid var(--border);border-radius:16px;padding:10px 10px 10px 16px;transition:border-color .2s}
+.input-box:focus-within{border-color:var(--border-hi)}
+textarea{flex:1;background:transparent;border:none;outline:none;resize:none;color:var(--text);font-family:'Outfit',sans-serif;font-size:14px;line-height:1.5;max-height:120px;overflow-y:auto}
+textarea::placeholder{color:var(--text-dim)}
+.send-btn{width:34px;height:34px;border-radius:10px;background:var(--accent);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:opacity .15s}
+.send-btn:hover{opacity:.85}
+.mcard{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:14px;animation:fadeUp .3s both}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.ring-track{fill:none;stroke:var(--surface3);stroke-width:3}
+.ring-fill{fill:none;stroke-width:3;stroke-linecap:round;transform:rotate(-90deg);transform-origin:50% 50%;transition:stroke-dashoffset .5s ease}
+.cta{width:100%;padding:13px;background:var(--accent);color:#0c1419;border:none;border-radius:12px;font-family:'Barlow Condensed',sans-serif;font-size:14px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;transition:opacity .15s}
+.cta:hover{opacity:.88}
+.ritem{display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--surface2);border:1px solid var(--border);border-radius:12px;cursor:pointer;transition:border-color .2s;animation:fadeUp .3s both}
+.ritem:hover{border-color:var(--border-hi)}
+#modal{display:none;position:fixed;inset:0;z-index:100;align-items:flex-end}
+.mbg{position:absolute;inset:0;background:rgba(0,0,0,.5);backdrop-filter:blur(4px)}
+.msheet{position:relative;width:100%;max-width:480px;margin:0 auto;background:var(--surface);border-radius:20px 20px 0 0;border:1px solid var(--border);border-bottom:none;display:flex;flex-direction:column;max-height:85vh;transform:translateY(100%);transition:transform .35s cubic-bezier(.32,.72,0,1)}
+.msheet.open{transform:translateY(0)}
+.mhandle{width:36px;height:4px;border-radius:2px;background:var(--surface3);margin:10px auto 0}
+/* GPX */
+.gpx-stat-card{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:14px;animation:fadeUp .3s both}
+.gpx-upload-zone{border:1.5px dashed var(--border-hi);border-radius:14px;padding:44px 20px;text-align:center;cursor:pointer;background:var(--surface);transition:all .22s;display:flex;flex-direction:column;align-items:center}
+.gpx-upload-zone:hover,.gpx-upload-zone.drag-over{background:var(--accent-dim);border-color:var(--accent)}
+/* 骑行性质按钮 */
+.ride-type-btn{padding:5px 13px;border-radius:100px;border:1px solid var(--border);background:var(--surface3);color:var(--text-muted);font-family:'Barlow Condensed',sans-serif;font-size:12.5px;letter-spacing:.06em;cursor:pointer;transition:all .18s}
+.ride-type-btn.active{background:var(--accent);color:#0c1419;border-color:var(--accent);font-weight:600}
+/* 表单输入 */
+.gpx-input{background:var(--surface3);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;padding:8px 10px;outline:none;font-family:'JetBrains Mono',monospace;transition:border-color .2s;width:100%}
+.gpx-input:focus{border-color:var(--border-hi)}
+.gpx-input::placeholder{color:var(--text-dim)}
+/* analysis bubble */
+#gpx-analysis-body.bubble{border-radius:0;border:none;background:transparent;max-width:100%;padding:14px 16px;font-size:13px}
+#gpx-analysis-body.bubble h2{font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin:1em 0 .4em;border-bottom:1px solid var(--border);padding-bottom:.3em}
+</style>
+</head>
+<body>
+<div id="app">
+
+<header>
+  <div class="logo-mark">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0c1419" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+  </div>
+  <div>
+    <div class="fd" style="font-size:14px;letter-spacing:.14em;text-transform:uppercase;line-height:1">GARMIN</div>
+    <div style="font-size:10px;color:var(--text-muted);letter-spacing:.1em;text-transform:uppercase">健康助手</div>
+  </div>
+  <div style="margin-left:auto;display:flex;align-items:center;gap:10px">
+    <button id="clear-btn" onclick="clearChat()" style="background:transparent;border:1px solid var(--border);border-radius:8px;padding:4px 10px;color:var(--text-muted);font-size:11px;font-family:'Barlow Condensed',sans-serif;letter-spacing:.08em;cursor:pointer;transition:all .2s" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-muted)'">清除对话</button>
+    <div style="width:6px;height:6px;border-radius:50%;background:var(--accent);box-shadow:0 0 6px var(--accent-glow)"></div>
+    <span class="fm" style="font-size:10px;color:var(--text-muted)">ONLINE</span>
+  </div>
+</header>
+
+<nav>
+  <button class="tab-btn active" id="tab-chat" onclick="switchTab('chat')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+    对话
+  </button>
+  <button class="tab-btn" id="tab-status" onclick="switchTab('status')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+    状态
+  </button>
+  <button class="tab-btn" id="tab-reports" onclick="switchTab('reports')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+    报告
+  </button>
+  <button class="tab-btn" id="tab-route" onclick="switchTab('route')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/></svg>
+    路线
+  </button>
+</nav>
+
+<main>
+
+<!-- CHAT -->
+<div class="page active" id="page-chat">
+  <div class="scroll-area" id="messages">
+    <div class="msg-ai">
+      <div class="av av-ai"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg></div>
+      <div class="bubble" style="background:var(--surface2);border:1px solid var(--border);border-radius:4px 18px 18px 18px;color:var(--text-muted)">
+        你好，丛至！我已同步你最新的 Garmin 数据。<br><br>
+        <span style="color:var(--text)">可以问我：</span><br>
+        <span class="fm" style="font-size:11px;color:var(--accent)">01</span> 今天状态适合练吗？<br>
+        <span class="fm" style="font-size:11px;color:var(--accent)">02</span> 最近恢复趋势如何？<br>
+        <span class="fm" style="font-size:11px;color:var(--accent)">03</span> 骑行功率怎么安排？
+      </div>
+    </div>
+  </div>
+  <div id="chips-row">
+    <button class="chip" onclick="sendQ('今天身体状态怎么样？')">⚡ 今日状态</button>
+    <button class="chip" onclick="sendQ('今天适合骑行训练吗？建议什么强度？')">🚴 训练建议</button>
+    <button class="chip" onclick="sendQ('最近一周我的恢复情况如何？')">📈 恢复分析</button>
+    <button class="chip" onclick="sendQ('我的HRV今天怎么样？')">💓 HRV 解读</button>
+    <button class="chip" onclick="sendQ('昨晚睡眠质量怎么样？')">🌙 睡眠分析</button>
+  </div>
+  <div class="input-wrap">
+    <div class="input-box">
+      <textarea id="inp" rows="1" placeholder="问我关于你身体状态的问题…" oninput="autoResize(this)" onkeydown="onKey(event)"></textarea>
+      <div class="send-btn" onclick="sendMsg()" id="sbtn">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#0c1419" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 10.5L12 3m0 0l7.5 7.5M12 3v18"/></svg>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- STATUS -->
+<div class="page" id="page-status">
+  <div class="scroll-area" style="padding:16px;display:flex;flex-direction:column;gap:12px">
+    <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:2px">
+      <div class="fd" style="font-size:22px;letter-spacing:.05em;text-transform:uppercase">今日状态</div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <div id="s-date" class="fm" style="font-size:11px;color:var(--text-muted)">—</div>
+        <button onclick="refreshStatus()" style="background:transparent;border:1px solid var(--border);border-radius:6px;padding:3px 8px;color:var(--text-muted);font-size:11px;cursor:pointer;transition:all .2s" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-muted)'">↺ 刷新</button>
+      </div>
+    </div>
+    <div id="mgrid" style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div style="grid-column:span 2;text-align:center;padding:40px;color:var(--text-dim)" class="fm">LOADING…</div>
+    </div>
+    <button class="cta" onclick="askAI()">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+      根据今日状态问 AI
+    </button>
+  </div>
+</div>
+
+<!-- REPORTS -->
+<div class="page" id="page-reports">
+  <div class="scroll-area" style="padding:16px;display:flex;flex-direction:column;gap:8px">
+    <div class="fd" style="font-size:22px;letter-spacing:.05em;text-transform:uppercase;margin-bottom:8px">历史报告</div>
+    <div id="rlist"><div style="text-align:center;padding:40px;color:var(--text-dim)" class="fm">LOADING…</div></div>
+  </div>
+</div>
+
+<!-- ROUTE -->
+<div class="page" id="page-route">
+  <div class="scroll-area" style="padding:16px;display:flex;flex-direction:column;gap:12px">
+
+    <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:2px">
+      <div class="fd" style="font-size:22px;letter-spacing:.05em;text-transform:uppercase">GPX 路线规划</div>
+      <button id="gpx-reset-btn" onclick="resetGpxPage()" style="display:none;background:transparent;border:1px solid var(--border);border-radius:6px;padding:3px 10px;color:var(--text-muted);font-size:11px;font-family:'Barlow Condensed',sans-serif;letter-spacing:.08em;cursor:pointer;transition:all .2s" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-muted)'">↺ 重新上传</button>
+    </div>
+
+    <!-- 上传区 -->
+    <div id="gpx-upload-zone" class="gpx-upload-zone"
+         onclick="document.getElementById('gpx-file-input').click()"
+         ondragover="event.preventDefault();this.classList.add('drag-over')"
+         ondragleave="this.classList.remove('drag-over')"
+         ondrop="handleGpxDrop(event)">
+      <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:14px;opacity:.85">
+        <path d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/>
+      </svg>
+      <div class="fd" style="font-size:15px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:6px">上传 GPX 文件</div>
+      <div style="font-size:12px;color:var(--text-muted)">点击或拖拽文件到此处</div>
+      <div style="margin-top:14px;display:flex;gap:8px">
+        <span style="font-size:10px;padding:2px 9px;border-radius:100px;background:var(--surface3);color:var(--text-dim);font-family:'Barlow Condensed',sans-serif;letter-spacing:.06em">FTP 250W</span>
+        <span style="font-size:10px;padding:2px 9px;border-radius:100px;background:var(--surface3);color:var(--text-dim);font-family:'Barlow Condensed',sans-serif;letter-spacing:.06em">自动读取 TSB</span>
+        <span style="font-size:10px;padding:2px 9px;border-radius:100px;background:var(--surface3);color:var(--text-dim);font-family:'Barlow Condensed',sans-serif;letter-spacing:.06em">天气预报</span>
+      </div>
+      <input type="file" id="gpx-file-input" accept=".gpx" style="display:none" onchange="handleGpxFile(this)">
+    </div>
+
+    <!-- 结果区（上传后显示） -->
+    <div id="gpx-results" style="display:none;flex-direction:column;gap:12px">
+
+      <!-- 路线指标 -->
+      <div id="gpx-stats-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div style="grid-column:span 2;text-align:center;padding:24px;color:var(--text-dim)" class="fm">PARSING…</div>
+      </div>
+
+      <!-- 坡度分布色条 -->
+      <div id="gpx-grade-card" style="display:none;background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:12px 14px">
+        <div class="fd" style="font-size:10px;letter-spacing:.12em;color:var(--text-muted);text-transform:uppercase;margin-bottom:8px">坡度分布</div>
+        <div id="gpx-grade-bars" style="display:flex;height:7px;border-radius:4px;overflow:hidden;gap:1px;margin-bottom:7px"></div>
+        <div id="gpx-grade-legend" style="display:flex;gap:10px;flex-wrap:wrap"></div>
+      </div>
+
+      <!-- 海拔剖面 -->
+      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:14px 14px 10px">
+        <div class="fd" style="font-size:10px;letter-spacing:.12em;color:var(--text-muted);text-transform:uppercase;margin-bottom:10px">海拔剖面</div>
+        <div id="gpx-profile-svg" style="width:100%"></div>
+      </div>
+
+      <!-- 骑行信息表单 -->
+      <div id="gpx-ride-form" style="display:none;background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:16px">
+
+        <div class="fd" style="font-size:10px;letter-spacing:.12em;color:var(--text-muted);text-transform:uppercase;margin-bottom:10px">骑行性质</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px">
+          <button class="ride-type-btn active" data-type="recovery" onclick="selectRideType('recovery')">恢复骑</button>
+          <button class="ride-type-btn" data-type="z2" onclick="selectRideType('z2')">Z2 训练</button>
+          <button class="ride-type-btn" data-type="strength" onclick="selectRideType('strength')">力量/爬坡</button>
+          <button class="ride-type-btn" data-type="touring" onclick="selectRideType('touring')">骑游</button>
+          <button class="ride-type-btn" data-type="race" onclick="selectRideType('race')">比赛</button>
+        </div>
+
+        <div class="fd" style="font-size:10px;letter-spacing:.12em;color:var(--text-muted);text-transform:uppercase;margin-bottom:8px">计划出发</div>
+        <div style="display:flex;gap:8px;margin-bottom:16px">
+          <input type="date" id="ride-date" class="gpx-input" style="flex:2">
+          <input type="time" id="ride-time" value="07:00" class="gpx-input" style="flex:1">
+        </div>
+
+        <div class="fd" style="font-size:10px;letter-spacing:.12em;color:var(--text-muted);text-transform:uppercase;margin-bottom:8px">我的体重</div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:18px">
+          <input type="number" id="ride-weight" min="40" max="130" placeholder="kg" class="gpx-input" style="width:80px;text-align:center">
+          <span style="font-size:13px;color:var(--text-muted)">kg</span>
+        </div>
+
+        <button class="cta" onclick="analyzeRoute()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+          开始 AI 分析
+        </button>
+      </div>
+
+      <!-- AI 分析结果 -->
+      <div id="gpx-analysis-section" style="display:none;background:var(--surface2);border:1px solid var(--border);border-radius:12px;overflow:hidden">
+        <div style="padding:12px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px">
+          <div id="gpx-spin-icon" style="width:16px;height:16px;flex-shrink:0;display:flex;align-items:center;justify-content:center">
+            <svg class="spin" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.2" stroke-linecap="round"><path d="M21 12a9 9 0 11-6.219-8.56"/></svg>
+          </div>
+          <div id="gpx-analysis-title" class="fd" style="font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted)">AI 正在分析路线…</div>
+        </div>
+        <div id="gpx-analysis-body" class="bubble" style="display:none;border-radius:0;border:none;background:transparent;max-width:100%;padding:14px 16px;font-size:13px"></div>
+      </div>
+
+    </div><!-- /gpx-results -->
+  </div>
+</div>
+
+</main>
+</div>
+
+<!-- MODAL -->
+<div id="modal">
+  <div class="mbg" onclick="closeModal()"></div>
+  <div class="msheet" id="msheet">
+    <div class="mhandle"></div>
+    <div style="padding:14px 20px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0">
+      <div>
+        <div id="mtitle" class="fd" style="font-size:18px;letter-spacing:.05em;text-transform:uppercase"></div>
+        <div id="msub" style="font-size:12px;color:var(--text-muted);margin-top:2px"></div>
+      </div>
+      <div onclick="closeModal()" style="width:32px;height:32px;border-radius:8px;background:var(--surface2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-muted)">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 18L18 6M6 6l12 12"/></svg>
+      </div>
+    </div>
+    <div id="mbody" class="scroll-area" style="padding:16px 20px;display:flex;flex-direction:column;gap:10px"></div>
+  </div>
+</div>
+
+<script>
+const API='';
+let history=[];
+let busy=false;
+let statusLoaded=false;
+let reportsLoaded=false;
+
+const STATUS_MAP={
+  'PRODUCTIVE':'积极进步','PEAKING':'顶峰状态','MAINTAINING':'保持状态',
+  'RECOVERY':'积极恢复','OVERREACHING':'负荷过高','DETRAINING':'训练减退',
+  'NO_DATA':'暂无数据','UNPRODUCTIVE':'效率低下','STRAINED':'压力偏大'
+};
+function translateStatus(s){
+  if(!s)return'—';
+  const base=s.replace(/_\d+$/,'');
+  const label=STATUS_MAP[base]||STATUS_MAP[s]||s;
+  const num=s.match(/_(\d+)$/);
+  return num?`${label} L${num[1]}`:label;
+}
+function reportBadge(type){
+  if(type==='icu_sleep')return{icon:'🌙',label:'睡眠',bg:'rgba(56,197,245,0.12)',color:'var(--sky)'};
+  if(type==='icu_cycling')return{icon:'🚴',label:'骑行',bg:'rgba(184,240,80,0.12)',color:'var(--accent)'};
+  if(type==='garmin')return{icon:'📊',label:'Garmin',bg:'rgba(167,139,250,0.12)',color:'#a78bfa'};
+  return{icon:'📋',label:'日报',bg:'rgba(255,255,255,0.06)',color:'var(--text-muted)'};
+}
+function saveHistory(){try{localStorage.setItem('chatHistory',JSON.stringify(history))}catch{}}
+function clearChat(){
+  if(!confirm('清除所有对话记录？'))return;
+  history=[];
+  try{localStorage.removeItem('chatHistory')}catch{}
+  document.getElementById('messages').innerHTML=`
+    <div class="msg-ai">
+      <div class="av av-ai"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg></div>
+      <div class="bubble" style="background:var(--surface2);border:1px solid var(--border);border-radius:4px 18px 18px 18px;color:var(--text-muted)">
+        你好，丛至！我已同步你最新的 Garmin 数据。<br><br>
+        <span style="color:var(--text)">可以问我：</span><br>
+        <span class="fm" style="font-size:11px;color:var(--accent)">01</span> 今天状态适合练吗？<br>
+        <span class="fm" style="font-size:11px;color:var(--accent)">02</span> 最近恢复趋势如何？<br>
+        <span class="fm" style="font-size:11px;color:var(--accent)">03</span> 骑行功率怎么安排？
+      </div>
+    </div>`;
+}
+function loadHistory(){
+  try{
+    const saved=localStorage.getItem('chatHistory');
+    if(!saved)return;
+    const parsed=JSON.parse(saved);
+    if(!parsed||!parsed.length)return;
+    history=parsed;
+    const msgs=document.getElementById('messages');
+    parsed.forEach(m=>{
+      if(m.role==='user'){
+        const w=document.createElement('div');w.className='msg-user';
+        w.innerHTML=`${mkAv(true)}<div class="bubble" style="background:var(--accent);color:#0c1419;border-radius:18px 4px 18px 18px;font-size:14px">${esc(m.content)}</div>`;
+        msgs.appendChild(w);
+      }else{
+        const w=document.createElement('div');w.className='msg-ai';
+        w.innerHTML=`${mkAv(false)}<div class="bubble">${md(m.content)}</div>`;
+        msgs.appendChild(w);
+      }
+    });
+    msgs.scrollTop=msgs.scrollHeight;
+  }catch{}
+}
+function switchTab(t){
+  ['chat','status','reports','route'].forEach(x=>{
+    document.getElementById('page-'+x).classList.toggle('active',x===t);
+    document.getElementById('tab-'+x).classList.toggle('active',x===t);
+  });
+  document.getElementById('clear-btn').style.display=t==='chat'?'':'none';
+  if(t==='status'&&!statusLoaded)loadStatus();
+  if(t==='reports'&&!reportsLoaded)loadReports();
+}
+function autoResize(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,120)+'px'}
+function onKey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMsg()}}
+function sendQ(t){document.getElementById('inp').value=t;sendMsg()}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+function md(s){try{return marked.parse(s||'')}catch{return esc(s)}}
+function mkAv(isMe){
+  if(isMe)return`<div class="av av-me"><span class="fd" style="font-size:13px;font-weight:700;color:#0c1419;letter-spacing:.05em">ME</span></div>`;
+  return`<div class="av av-ai"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg></div>`;
+}
+function addMsg(role,html,id){
+  const isMe=role==='user';
+  const msgs=document.getElementById('messages');
+  const w=document.createElement('div');w.className=isMe?'msg-user':'msg-ai';
+  if(id)w.id=id;
+  const b=isMe
+    ?`<div class="bubble" style="background:var(--accent);color:#0c1419;border-radius:18px 4px 18px 18px;font-size:14px">${esc(html)}</div>`
+    :`<div class="bubble" id="${id}-b">${html}</div>`;
+  w.innerHTML=mkAv(isMe)+b;
+  msgs.appendChild(w);msgs.scrollTop=msgs.scrollHeight;
+}
+function showTyping(){
+  const msgs=document.getElementById('messages');
+  const w=document.createElement('div');w.id='typ';w.className='msg-ai';
+  w.innerHTML=mkAv(false)+`<div class="bubble" style="display:flex;align-items:center;gap:4px;padding:14px 16px"><div class="tbar"></div><div class="tbar"></div><div class="tbar"></div></div>`;
+  msgs.appendChild(w);msgs.scrollTop=msgs.scrollHeight;
+}
+async function sendMsg(){
+  if(busy)return;
+  const inp=document.getElementById('inp');
+  const t=inp.value.trim();if(!t)return;
+  inp.value='';inp.style.height='auto';
+  history.push({role:'user',content:t});saveHistory();
+  addMsg('user',t);showTyping();busy=true;
+  const aid=`a${Date.now()}`;let txt='',bEl=null;
+  try{
+    const CONTEXT_WINDOW=10;
+    const r=await fetch(`${API}/api/chat`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:history.slice(-CONTEXT_WINDOW)})});
+    if(!r.ok)throw new Error('HTTP '+r.status);
+    const reader=r.body.getReader(),dec=new TextDecoder();let buf='';
+    while(true){
+      const{done,value}=await reader.read();if(done)break;
+      buf+=dec.decode(value,{stream:true});
+      const lines=buf.split('\n');buf=lines.pop();
+      for(const l of lines){
+        if(!l.startsWith('data: '))continue;
+        const raw=l.slice(6).trim();if(raw==='[DONE]')continue;
+        try{
+          const o=JSON.parse(raw);
+          if(o.error){txt+='\n\n⚠️ '+o.error;break}
+          if(o.meta==='querying'){
+            const TOOL_LABELS={'list_activities':'📋 查活动记录','get_activity':'🚴 查骑行详情','get_sleep':'🌙 查睡眠数据','get_wellness_trend':'📈 查健康趋势','get_past_analysis':'📄 查历史报告'};
+            const names=(o.tools||[]).map(t=>TOOL_LABELS[t]||t).join(' · ');
+            const tb=document.getElementById('typ')?.querySelector('.bubble');
+            if(tb)tb.innerHTML=`<span style="font-size:12px;color:var(--accent);letter-spacing:.04em">${names}…</span>`;
+          }else if(o.content){
+            if(!bEl){document.getElementById('typ')?.remove();addMsg('assistant','',aid);bEl=document.getElementById(aid+'-b')}
+            txt+=o.content;
+            if(bEl){bEl.innerHTML=md(txt);document.getElementById('messages').scrollTop=99999}
+          }
+        }catch{}
+      }
+    }
+  }catch(e){
+    document.getElementById('typ')?.remove();
+    addMsg('assistant',`<span style="color:var(--text-muted)">连接失败，请稍后重试。</span>`,aid);txt='连接失败';
+  }
+  document.getElementById('typ')?.remove();
+  if(txt){history.push({role:'assistant',content:txt});saveHistory();}
+  busy=false;
+}
+
+/* status */
+function ring(pct,color){
+  const r=18,c=22,circ=2*Math.PI*r,off=circ*(1-Math.min(1,Math.max(0,pct||0)));
+  return`<svg width="44" height="44" class="ring-svg"><circle class="ring-track" cx="${c}" cy="${c}" r="${r}"/><circle class="ring-fill" cx="${c}" cy="${c}" r="${r}" stroke="${color}" stroke-dasharray="${circ}" stroke-dashoffset="${off}"/></svg>`;
+}
+function fs(s){if(!s)return'—';const h=Math.floor(s/3600),m=Math.floor((s%3600)/60);return h>0?`${h}h ${m}m`:`${m}m`}
+function mc(icon,label,val,sub,pct,col,delay){
+  return`<div class="mcard" style="animation-delay:${delay}s">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start">
+      <div>
+        <div class="fd" style="font-size:11px;color:var(--text-muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px">${label}</div>
+        <div class="fm" style="font-size:${val.length>7?'15px':'19px'};font-weight:500;color:var(--text);line-height:1.1">${val}</div>
+        ${sub?`<div style="font-size:11px;color:var(--text-muted);margin-top:4px">${sub}</div>`:''}
+      </div>
+      <div style="opacity:.55">${ring(pct,col)}</div>
+    </div>
+    <div style="font-size:18px;margin-top:8px">${icon}</div>
+  </div>`;
+}
+function refreshStatus(){statusLoaded=false;loadStatus();}
+async function loadStatus(){
+  statusLoaded=true;const g=document.getElementById('mgrid');
+  try{
+    const d=await fetch(`${API}/api/status`).then(r=>r.json());
+    const m=d.metrics||{};
+    document.getElementById('s-date').textContent=d.date||'';
+    g.innerHTML=[
+      mc('💓','HRV',m.hrv_rmssd?`${m.hrv_rmssd} ms`:'—',m.hrv_status?.toLowerCase()||'',m.hrv_rmssd?Math.min(1,m.hrv_rmssd/100):0,'var(--accent)',.05),
+      mc('🛌','睡眠评分',m.sleep_score?String(m.sleep_score):'—',fs(m.sleep_seconds),m.sleep_score?m.sleep_score/100:0,'var(--sky)',.10),
+      mc('❤️','静息心率',m.resting_hr?`${m.resting_hr}`:'—','bpm',m.resting_hr?1-(Math.min(80,Math.max(40,m.resting_hr))-40)/40:.5,'#f87171',.15),
+      mc('⚡','身体电量',m.body_battery_high?`${m.body_battery_high}%`:'—',m.body_battery_low?`低点 ${m.body_battery_low}%`:'',m.body_battery_high?m.body_battery_high/100:0,'#fbbf24',.20),
+      mc('🚴','FTP',m.cycling_ftp?`${m.cycling_ftp} W`:'—','骑行阈值',m.cycling_ftp?Math.min(1,m.cycling_ftp/350):0,'var(--accent)',.25),
+      mc('🩸','夜间血氧',m.spo2_min?`${m.spo2_min}%`:'—',m.spo2_avg?`均值 ${m.spo2_avg}%`:'',m.spo2_min?(m.spo2_min-85)/15:.8,'var(--sky)',.30),
+      mc('💪','训练状态',translateStatus(m.training_status),m.training_load?`负荷 ${Math.round(m.training_load)}`:'',m.training_load?Math.min(1,m.training_load/200):.5,'#a78bfa',.35),
+      mc('🏅','耐力评分',m.endurance_score?String(m.endurance_score):'—','',m.endurance_score?m.endurance_score/100:0,'#34d399',.40),
+    ].join('');
+  }catch{g.innerHTML=`<div style="grid-column:span 2;text-align:center;padding:40px;color:var(--text-dim)" class="fm">LOAD ERROR</div>`}
+}
+function askAI(){
+  switchTab('chat');
+  setTimeout(()=>{document.getElementById('inp').value='根据今天的身体状态数据，给我一个具体的训练建议';sendMsg()},150);
+}
+async function loadReports(){
+  reportsLoaded=true;const el=document.getElementById('rlist');
+  try{
+    const d=await fetch(`${API}/api/reports?days=30`).then(r=>r.json());
+    const rs=d.reports||[];
+    if(!rs.length){el.innerHTML=`<div style="text-align:center;padding:40px;color:var(--text-dim)" class="fm">NO REPORTS</div>`;return}
+    el.innerHTML=rs.map((r,i)=>{
+      const dt=new Date(r.date),mo=String(dt.getMonth()+1).padStart(2,'0'),dy=String(dt.getDate()).padStart(2,'0');
+      const badge=reportBadge(r.type);
+      return`<div class="ritem" onclick="openReport('${r.date}','${r.type||''}')" style="animation-delay:${i*.04}s">
+        <div style="width:40px;height:40px;border-radius:10px;background:var(--surface2);border:1px solid var(--border);display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0">
+          <div class="fm" style="font-size:16px;font-weight:600;color:var(--accent);line-height:1">${dy}</div>
+          <div class="fm" style="font-size:9px;color:var(--text-muted)">/${mo}</div>
+        </div>
+        <div style="flex:1;min-width:0">
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:2px">
+            <span style="font-size:13px;color:var(--text);font-weight:500">${r.date}</span>
+            <span style="font-size:10px;padding:1px 7px;border-radius:100px;background:${badge.bg};color:${badge.color};font-family:'Barlow Condensed',sans-serif;letter-spacing:.06em">${badge.icon} ${badge.label}</span>
+          </div>
+          ${r.conclusion?`<div style="font-size:12px;color:var(--text-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.conclusion}</div>`:''}
+        </div>
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--text-dim)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg>
+      </div>`;
+    }).join('');
+  }catch{el.innerHTML=`<div style="text-align:center;padding:40px;color:var(--text-dim)" class="fm">LOAD ERROR</div>`}
+}
+async function openReport(date,type){
+  const modal=document.getElementById('modal'),sheet=document.getElementById('msheet');
+  const badge=reportBadge(type);
+  document.getElementById('mtitle').textContent=`${badge.icon} ${date}`;
+  document.getElementById('msub').textContent=badge.label;
+  document.getElementById('mbody').innerHTML=`<div style="text-align:center;padding:32px;color:var(--text-dim)" class="fm">LOADING…</div>`;
+  modal.style.display='flex';
+  requestAnimationFrame(()=>requestAnimationFrame(()=>sheet.classList.add('open')));
+  try{
+    const url=type?`${API}/api/reports/${date}?type=${type}`:`${API}/api/reports/${date}`;
+    const d=await fetch(url).then(r=>r.json());
+    if(d.conclusion)document.getElementById('msub').textContent=d.conclusion;
+    const msgs=d.push_messages||[];
+    const body=document.getElementById('mbody');
+    if(!msgs.length){body.innerHTML=`<div style="text-align:center;color:var(--text-dim);font-size:13px">无详细内容</div>`;return}
+    body.innerHTML=msgs.map(m=>{
+      const c=m.content||m.message||'';if(!c)return'';
+      return`<div style="background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:13px 15px;font-size:13px;color:var(--text-muted);white-space:pre-wrap;line-height:1.65">${esc(c)}</div>`;
+    }).join('');
+  }catch{document.getElementById('mbody').innerHTML=`<div style="color:#f87171;text-align:center;font-size:13px">加载失败</div>`}
+}
+function closeModal(){
+  const s=document.getElementById('msheet');s.classList.remove('open');
+  setTimeout(()=>{document.getElementById('modal').style.display='none'},350);
+}
+
+/* ══════════════════ GPX 路线规划 ══════════════════ */
+let gpxRoute = null;
+let selectedRideType = 'recovery';
+let gpxAnalysisTxt = '';
+
+function selectRideType(type) {
+  selectedRideType = type;
+  document.querySelectorAll('.ride-type-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.type === type);
+  });
+}
+
+function handleGpxFile(input) {
+  if (!input.files || !input.files[0]) return;
+  parseGpx(input.files[0]);
+}
+
+function handleGpxDrop(event) {
+  event.preventDefault();
+  document.getElementById('gpx-upload-zone').classList.remove('drag-over');
+  const file = event.dataTransfer.files[0];
+  if (file && file.name.toLowerCase().endsWith('.gpx')) parseGpx(file);
+}
+
+async function parseGpx(file) {
+  // 切换到结果区
+  document.getElementById('gpx-upload-zone').style.display = 'none';
+  document.getElementById('gpx-reset-btn').style.display = '';
+  const results = document.getElementById('gpx-results');
+  results.style.display = 'flex';
+  document.getElementById('gpx-stats-grid').innerHTML =
+    '<div style="grid-column:span 2;text-align:center;padding:24px;color:var(--text-dim)" class="fm">PARSING GPX…</div>';
+  document.getElementById('gpx-grade-card').style.display = 'none';
+  document.getElementById('gpx-profile-svg').innerHTML = '';
+  document.getElementById('gpx-ride-form').style.display = 'none';
+  document.getElementById('gpx-analysis-section').style.display = 'none';
+
+  const formData = new FormData();
+  formData.append('file', file);
+  try {
+    const resp = await fetch(`${API}/api/gpx-parse`, { method: 'POST', body: formData });
+    if (!resp.ok) {
+      const err = await resp.json().catch(() => ({ detail: 'HTTP ' + resp.status }));
+      throw new Error(err.detail || 'HTTP ' + resp.status);
+    }
+    gpxRoute = await resp.json();
+    showRouteStats(gpxRoute);
+    renderGradeDist(gpxRoute.grade_dist, gpxRoute.total_dist_km);
+    renderElevationProfile(gpxRoute.profile, gpxRoute.total_dist_km);
+    // 预填今天日期
+    document.getElementById('ride-date').value = new Date().toISOString().split('T')[0];
+    document.getElementById('gpx-ride-form').style.display = '';
+  } catch (err) {
+    document.getElementById('gpx-stats-grid').innerHTML =
+      `<div style="grid-column:span 2;color:#f87171;font-size:13px;padding:16px">${err.message}</div>`;
+  }
+}
+
+function showRouteStats(route) {
+  const stats = [
+    { sub: 'DISTANCE', value: route.total_dist_km + ' km', label: '总里程', color: 'var(--accent)' },
+    { sub: 'ELEVATION +', value: route.total_gain_m + ' m', label: '总爬升', color: 'var(--sky)' },
+    { sub: 'MAX ALT', value: route.max_ele_m + ' m', label: '最高点', color: 'var(--accent)' },
+    { sub: 'MIN ALT', value: route.min_ele_m + ' m', label: '最低点', color: 'var(--text-muted)' },
+  ];
+  document.getElementById('gpx-stats-grid').innerHTML = stats.map((s, i) => `
+    <div class="gpx-stat-card" style="animation-delay:${i * 0.06}s">
+      <div class="fm" style="font-size:9.5px;letter-spacing:.14em;color:var(--text-dim);text-transform:uppercase;margin-bottom:5px">${s.sub}</div>
+      <div class="fm" style="font-size:21px;font-weight:500;color:${s.color};line-height:1;margin-bottom:3px">${s.value}</div>
+      <div style="font-size:11px;color:var(--text-muted)">${s.label}</div>
+    </div>`).join('');
+}
+
+function renderGradeDist(gd, totalKm) {
+  if (!gd) return;
+  const cats = [
+    { key: 'flat_km', label: '平路 ≤2%', color: 'var(--text-dim)' },
+    { key: 'easy_km', label: '缓坡 2-5%', color: '#4ade80' },
+    { key: 'moderate_km', label: '中坡 5-9%', color: '#facc15' },
+    { key: 'steep_km', label: '陡坡 >9%', color: '#f87171' },
+  ];
+  const total = totalKm || 1;
+  document.getElementById('gpx-grade-bars').innerHTML = cats.map(c => {
+    const pct = ((gd[c.key] || 0) / total * 100).toFixed(1);
+    return pct > 0 ? `<div style="flex:${pct};background:${c.color};min-width:3px;border-radius:2px"></div>` : '';
+  }).join('');
+  document.getElementById('gpx-grade-legend').innerHTML = cats.map(c => {
+    const km = gd[c.key] || 0;
+    if (km < 0.1) return '';
+    return `<div style="display:flex;align-items:center;gap:4px">
+      <div style="width:7px;height:7px;border-radius:2px;background:${c.color}"></div>
+      <span class="fm" style="font-size:10px;color:var(--text-muted)">${c.label} · ${km}km</span>
+    </div>`;
+  }).join('');
+  document.getElementById('gpx-grade-card').style.display = '';
+}
+
+function renderElevationProfile(profile, totalKm) {
+  const container = document.getElementById('gpx-profile-svg');
+  if (!profile || profile.length < 2) { container.innerHTML = ''; return; }
+  const VW = 340, VH = 80, PL = 2, PR = 2, PT = 4, PB = 18;
+  const CW = VW - PL - PR, CH = VH - PT - PB;
+  const minE = Math.min(...profile.map(p => p.e));
+  const maxE = Math.max(...profile.map(p => p.e));
+  const maxD = profile[profile.length - 1].d || totalKm || 1;
+  const eRange = (maxE - minE) || 1;
+  const sx = d => PL + (d / maxD) * CW;
+  const sy = e => PT + CH - ((e - minE) / eRange) * CH;
+  const ptsArr = profile.map(p => [sx(p.d), sy(p.e)]);
+  const ptsStr = ptsArr.map(p => p[0].toFixed(1) + ',' + p[1].toFixed(1)).join(' ');
+  const firstX = ptsArr[0][0].toFixed(1), lastX = ptsArr[ptsArr.length-1][0].toFixed(1);
+  const botY = (PT + CH).toFixed(1);
+  const fillD = `M${firstX},${botY} L${ptsStr.replace(/ /g,' L')} L${lastX},${botY} Z`;
+  const nTicks = 4;
+  const ticks = Array.from({length: nTicks+1}, (_,i) => {
+    const d = (i / nTicks) * maxD;
+    const x = sx(d);
+    const anchor = i===0?'start':i===nTicks?'end':'middle';
+    return `<text x="${x.toFixed(1)}" y="${VH-1}" text-anchor="${anchor}" fill="rgba(61,96,122,.9)" font-size="7.5" font-family="'JetBrains Mono',monospace">${d.toFixed(0)}km</text>`;
+  }).join('');
+  container.innerHTML = `
+    <svg width="100%" viewBox="0 0 ${VW} ${VH}" preserveAspectRatio="none" style="display:block;overflow:visible">
+      <defs><linearGradient id="gpxGrad" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#b8f050" stop-opacity="0.22"/>
+        <stop offset="100%" stop-color="#b8f050" stop-opacity="0.01"/>
+      </linearGradient></defs>
+      <path d="${fillD}" fill="url(#gpxGrad)"/>
+      <polyline points="${ptsStr}" fill="none" stroke="#b8f050" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"/>
+      ${ticks}
+    </svg>`;
+}
+
+async function analyzeRoute() {
+  if (!gpxRoute) return;
+  const weight = parseFloat(document.getElementById('ride-weight').value);
+  if (!weight || weight < 30) {
+    const inp = document.getElementById('ride-weight');
+    inp.style.borderColor = '#f87171';
+    inp.focus();
+    setTimeout(() => { inp.style.borderColor = 'var(--border)'; }, 2000);
+    return;
+  }
+  const rideDate = document.getElementById('ride-date').value;
+  const rideTime = document.getElementById('ride-time').value || '07:00';
+  const plannedDt = rideDate ? `${rideDate}T${rideTime}:00` : '';
+
+  const sec = document.getElementById('gpx-analysis-section');
+  sec.style.display = '';
+  gpxAnalysisTxt = '';
+  document.getElementById('gpx-analysis-body').style.display = 'none';
+  document.getElementById('gpx-analysis-body').innerHTML = '';
+  document.getElementById('gpx-analysis-title').textContent = 'AI 正在分析路线…';
+  document.getElementById('gpx-analysis-title').style.color = 'var(--text-muted)';
+  document.getElementById('gpx-spin-icon').innerHTML =
+    '<svg class="spin" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.2" stroke-linecap="round"><path d="M21 12a9 9 0 11-6.219-8.56"/></svg>';
+  // 滚动到分析区
+  sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+  try {
+    const resp = await fetch(`${API}/api/gpx-analyze`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ route: gpxRoute, ride_type: selectedRideType, planned_dt: plannedDt, weight_kg: weight })
+    });
+    if (!resp.ok) throw new Error('HTTP ' + resp.status);
+    const reader = resp.body.getReader(), dec = new TextDecoder();
+    let buf = '';
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buf += dec.decode(value, { stream: true });
+      const lines = buf.split('\n'); buf = lines.pop();
+      for (const line of lines) {
+        if (!line.startsWith('data: ')) continue;
+        const payload = line.slice(6).trim();
+        if (payload === '[DONE]') {
+          document.getElementById('gpx-spin-icon').innerHTML =
+            '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+          document.getElementById('gpx-analysis-title').textContent = '路线分析完成';
+          document.getElementById('gpx-analysis-title').style.color = 'var(--accent)';
+          break;
+        }
+        try {
+          const data = JSON.parse(payload);
+          if (data.content) {
+            gpxAnalysisTxt += data.content;
+            const body = document.getElementById('gpx-analysis-body');
+            body.style.display = 'block';
+            body.innerHTML = md(gpxAnalysisTxt);
+          }
+          if (data.error) {
+            document.getElementById('gpx-analysis-title').textContent = '分析失败：' + data.error;
+            document.getElementById('gpx-analysis-title').style.color = '#f87171';
+          }
+        } catch {}
+      }
+    }
+  } catch (err) {
+    document.getElementById('gpx-analysis-title').textContent = '请求失败：' + err.message;
+    document.getElementById('gpx-analysis-title').style.color = '#f87171';
+  }
+}
+
+function resetGpxPage() {
+  gpxRoute = null; gpxAnalysisTxt = '';
+  selectedRideType = 'recovery';
+  document.querySelectorAll('.ride-type-btn').forEach(b => b.classList.toggle('active', b.dataset.type === 'recovery'));
+  document.getElementById('gpx-upload-zone').style.display = '';
+  document.getElementById('gpx-reset-btn').style.display = 'none';
+  document.getElementById('gpx-results').style.display = 'none';
+  document.getElementById('gpx-file-input').value = '';
+  document.getElementById('gpx-analysis-body').innerHTML = '';
+  document.getElementById('ride-weight').value = '';
+}
+/* ═══════════════════════════════════════════════════ */
+
+loadHistory();
+</script>
+</body>
+</html>

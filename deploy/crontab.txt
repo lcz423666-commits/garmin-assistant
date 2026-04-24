@@ -1,0 +1,5 @@
+CRON_TZ=Asia/Shanghai
+TZ=Asia/Shanghai
+*/15 * * * * /usr/bin/python3 /root/garmin_assistant/app/garmin_monitor.py >> /root/garmin_assistant/logs/garmin.log 2>&1
+10 21 * * * /usr/bin/python3 /root/garmin_assistant/scripts/generate_daily_report.py --json >> /root/garmin_assistant/logs/daily_report.log 2>&1
+0 7 * * 0 /usr/bin/python3 /root/garmin_assistant/weekly_profile_update.py >> /root/garmin_assistant/logs/profile_update.log 2>&1
