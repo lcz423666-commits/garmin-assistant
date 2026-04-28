@@ -81,6 +81,14 @@ textarea::placeholder{color:var(--text-dim)}
 /* analysis bubble */
 #gpx-analysis-body.bubble{border-radius:0;border:none;background:transparent;max-width:100%;padding:14px 16px;font-size:13px}
 #gpx-analysis-body.bubble h2{font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin:1em 0 .4em;border-bottom:1px solid var(--border);padding-bottom:.3em}
+/* 问卷 */
+#ob-overlay{position:fixed;inset:0;z-index:200;background:rgba(12,20,25,.92);backdrop-filter:blur(10px);align-items:center;justify-content:center;padding:20px}
+.ob-sheet{width:100%;max-width:440px;background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:24px;display:flex;flex-direction:column;gap:18px}
+.ob-opt{padding:10px 18px;border-radius:100px;border:1px solid var(--border);background:var(--surface2);color:var(--text-muted);font-family:'Outfit',sans-serif;font-size:14px;cursor:pointer;transition:all .18s;white-space:nowrap}
+.ob-opt:hover{border-color:var(--border-hi);color:var(--accent)}
+.ob-opt.selected{background:var(--accent);color:#0c1419;border-color:var(--accent);font-weight:600}
+.ob-confirm{width:100%;margin-top:4px;padding:12px;border-radius:12px;background:var(--surface3);border:1px solid var(--border);color:var(--text-muted);font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;transition:all .18s}
+.ob-confirm:hover{border-color:var(--accent);color:var(--accent)}
 </style>
 </head>
 <body>
@@ -96,6 +104,9 @@ textarea::placeholder{color:var(--text-dim)}
   </div>
   <div style="margin-left:auto;display:flex;align-items:center;gap:10px">
     <button id="clear-btn" onclick="clearChat()" style="background:transparent;border:1px solid var(--border);border-radius:8px;padding:4px 10px;color:var(--text-muted);font-size:11px;font-family:'Barlow Condensed',sans-serif;letter-spacing:.08em;cursor:pointer;transition:all .2s" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-muted)'">清除对话</button>
+    <button onclick="obShow()" title="个人设置" style="background:transparent;border:1px solid var(--border);border-radius:8px;width:28px;height:28px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;color:var(--text-muted);flex-shrink:0" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-muted)'">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+    </button>
     <div style="width:6px;height:6px;border-radius:50%;background:var(--accent);box-shadow:0 0 6px var(--accent-glow)"></div>
     <span class="fm" style="font-size:10px;color:var(--text-muted)">ONLINE</span>
   </div>
@@ -296,6 +307,24 @@ textarea::placeholder{color:var(--text-dim)}
   </div>
 </div>
 
+<!-- 问卷 -->
+<div id="ob-overlay" style="display:none">
+  <div class="ob-sheet">
+    <div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <div class="fd" style="font-size:11px;letter-spacing:.12em;color:var(--text-muted);text-transform:uppercase">个人设置</div>
+        <div id="ob-step-label" class="fm" style="font-size:11px;color:var(--text-dim)">1 / 6</div>
+      </div>
+      <div style="height:3px;background:var(--surface3);border-radius:2px;overflow:hidden">
+        <div id="ob-progress" style="height:100%;background:var(--accent);border-radius:2px;transition:width .35s ease;width:0%"></div>
+      </div>
+    </div>
+    <div id="ob-q" class="fd" style="font-size:20px;letter-spacing:.03em;color:var(--text);line-height:1.35"></div>
+    <div id="ob-opts" style="display:flex;flex-wrap:wrap;gap:8px"></div>
+    <button onclick="obSkip()" style="background:transparent;border:none;color:var(--text-dim);font-size:12px;cursor:pointer;padding:4px 0;text-align:left;align-self:flex-start">跳过设置</button>
+  </div>
+</div>
+
 <script>
 const API='';
 let history=[];
@@ -466,15 +495,21 @@ async function loadStatus(){
     const d=await fetch(`${API}/api/status`).then(r=>r.json());
     const m=d.metrics||{};
     document.getElementById('s-date').textContent=d.date||'';
+    const tsbVal=m.tsb??null;
+    const tsbColor=tsbVal===null?'var(--text-dim)':tsbVal>=5?'var(--accent)':tsbVal>=-5?'#fbbf24':'#f87171';
+    const tsbPct=tsbVal===null?.5:Math.max(0,Math.min(1,(tsbVal+30)/60));
+    const tsbSub=tsbVal===null?'':tsbVal>=10?'可大负荷训练':tsbVal>=0?'状态良好':tsbVal>=-10?'轻度疲劳':'需要休息';
+    const atlVal=m.atl??null;
+    const atlColor=atlVal===null?'var(--text-dim)':atlVal<50?'var(--accent)':atlVal<80?'#fbbf24':'#f87171';
     g.innerHTML=[
-      mc('💓','HRV',m.hrv_rmssd?`${m.hrv_rmssd} ms`:'—',m.hrv_status?.toLowerCase()||'',m.hrv_rmssd?Math.min(1,m.hrv_rmssd/100):0,'var(--accent)',.05),
+      mc('💓','HRV',m.hrv_rmssd?`${m.hrv_rmssd} ms`:'—',m.hrv_status?.toLowerCase()||'来自 ICU',m.hrv_rmssd?Math.min(1,m.hrv_rmssd/100):0,'var(--accent)',.05),
       mc('🛌','睡眠评分',m.sleep_score?String(m.sleep_score):'—',fs(m.sleep_seconds),m.sleep_score?m.sleep_score/100:0,'var(--sky)',.10),
-      mc('❤️','静息心率',m.resting_hr?`${m.resting_hr}`:'—','bpm',m.resting_hr?1-(Math.min(80,Math.max(40,m.resting_hr))-40)/40:.5,'#f87171',.15),
-      mc('⚡','身体电量',m.body_battery_high?`${m.body_battery_high}%`:'—',m.body_battery_low?`低点 ${m.body_battery_low}%`:'',m.body_battery_high?m.body_battery_high/100:0,'#fbbf24',.20),
+      mc('❤️','静息心率',m.resting_hr?`${Math.round(m.resting_hr)}`:'—','bpm',m.resting_hr?1-(Math.min(80,Math.max(40,m.resting_hr))-40)/40:.5,'#f87171',.15),
+      mc('🔋','Readiness',m.readiness!=null?String(m.readiness):'—','综合准备度',m.readiness!=null?m.readiness/100:.5,m.readiness>=75?'var(--accent)':m.readiness>=50?'#fbbf24':'#f87171',.20),
       mc('🚴','FTP',m.cycling_ftp?`${m.cycling_ftp} W`:'—','骑行阈值',m.cycling_ftp?Math.min(1,m.cycling_ftp/350):0,'var(--accent)',.25),
-      mc('🩸','夜间血氧',m.spo2_min?`${m.spo2_min}%`:'—',m.spo2_avg?`均值 ${m.spo2_avg}%`:'',m.spo2_min?(m.spo2_min-85)/15:.8,'var(--sky)',.30),
-      mc('💪','训练状态',translateStatus(m.training_status),m.training_load?`负荷 ${Math.round(m.training_load)}`:'',m.training_load?Math.min(1,m.training_load/200):.5,'#a78bfa',.35),
-      mc('🏅','耐力评分',m.endurance_score?String(m.endurance_score):'—','',m.endurance_score?m.endurance_score/100:0,'#34d399',.40),
+      mc('📈','CTL 体能',m.ctl!=null?String(m.ctl):'—',m.atl!=null?`疲劳 ATL ${m.atl}`:'慢性训练负荷',m.ctl!=null?Math.min(1,m.ctl/120):0,'var(--sky)',.30),
+      mc('🔥','ATL 疲劳',atlVal!=null?String(atlVal):'—','急性训练负荷',atlVal!=null?Math.min(1,atlVal/120):0,atlColor,.35),
+      mc('⚖️','TSB 状态',tsbVal!=null?(tsbVal>0?`+${tsbVal}`:String(tsbVal)):'—',tsbSub,tsbPct,tsbColor,.40),
     ].join('');
   }catch{g.innerHTML=`<div style="grid-column:span 2;text-align:center;padding:40px;color:var(--text-dim)" class="fm">LOAD ERROR</div>`}
 }
@@ -750,7 +785,84 @@ function resetGpxPage() {
 }
 /* ═══════════════════════════════════════════════════ */
 
+/* ═══════════════ 用户画像问卷 ═══════════════ */
+const OB_DAYS=[{l:'周一',v:'Mon'},{l:'周二',v:'Tue'},{l:'周三',v:'Wed'},{l:'周四',v:'Thu'},{l:'周五',v:'Fri'},{l:'周六',v:'Sat'},{l:'周日',v:'Sun'}];
+const OB_STEPS=[
+  {q:'你的主项是？',type:'single',field:'sport',
+    opts:[{l:'骑行',v:'cycling'},{l:'跑步',v:'running'},{l:'游泳',v:'swimming'},{l:'铁三',v:'triathlon'}]},
+  {q:'当前训练目标是？',type:'single',field:'goal_type',
+    opts:[{l:'提升能力',v:'ftp_improve'},{l:'备赛',v:'race'},{l:'减脂',v:'fat_loss'},{l:'保持健康',v:'maintain'}]},
+  {q:'一周通常训练几天？',type:'single',field:'days_per_week',
+    opts:[{l:'2天',v:2},{l:'3天',v:3},{l:'4天',v:4},{l:'5天',v:5},{l:'6天以上',v:6}]},
+  {q:'哪几天是你的训练日？',type:'multi',field:'training_days',opts:[...OB_DAYS]},
+  {q:'哪几天安排长距离训练？',type:'multi',field:'long_session_days',
+    opts:[...OB_DAYS,{l:'无固定',v:'__none__'}]},
+  {q:'你希望 AI 用什么风格和你沟通？',type:'single',field:'coaching_style',
+    opts:[{l:'严师直接',v:'strict'},{l:'数据理性',v:'data'},{l:'鼓励温和',v:'gentle'},{l:'朋友平等',v:'friend'}]},
+];
+let _obStep=0,_obData={},_obMulti=[];
+
+function obShow(){
+  _obStep=0;_obData={sport:null,goal_type:null,days_per_week:null,training_days:[],long_session_days:[],coaching_style:null};
+  document.getElementById('ob-overlay').style.display='flex';
+  obRender();
+}
+function obSkip(){document.getElementById('ob-overlay').style.display='none';try{localStorage.setItem('ob_done','true');}catch{}}
+function obRender(){
+  const s=OB_STEPS[_obStep];
+  document.getElementById('ob-step-label').textContent=`${_obStep+1} / ${OB_STEPS.length}`;
+  document.getElementById('ob-progress').style.width=((_obStep/OB_STEPS.length)*100)+'%';
+  document.getElementById('ob-q').textContent=s.q;
+  _obMulti=[];
+  const el=document.getElementById('ob-opts');
+  if(s.type==='single'){
+    el.innerHTML=s.opts.map(o=>`<button class="ob-opt" onclick="obPick(${JSON.stringify(o.v)})">${o.l}</button>`).join('');
+  }else{
+    el.innerHTML=s.opts.map(o=>`<button class="ob-opt" data-v="${o.v}" onclick="obToggle(this,'${o.v}')">${o.l}</button>`).join('')
+      +`<button class="ob-confirm" onclick="obNextMulti()">确认</button>`;
+  }
+}
+function obToggle(btn,v){
+  const none='__none__';
+  if(v===none){_obMulti=[none];document.querySelectorAll('#ob-opts .ob-opt').forEach(b=>b.classList.toggle('selected',b.dataset.v===none));return;}
+  _obMulti=_obMulti.filter(x=>x!==none);
+  const i=_obMulti.indexOf(v);if(i>=0)_obMulti.splice(i,1);else _obMulti.push(v);
+  document.querySelectorAll('#ob-opts .ob-opt').forEach(b=>{
+    if(b.dataset.v===none)b.classList.remove('selected');
+    else b.classList.toggle('selected',_obMulti.includes(b.dataset.v));
+  });
+}
+function obPick(v){_obData[OB_STEPS[_obStep].field]=v;_obStep++;_obStep>=OB_STEPS.length?obFinish():obRender();}
+function obNextMulti(){
+  _obData[OB_STEPS[_obStep].field]=_obMulti.filter(x=>x!=='__none__');
+  _obStep++;_obStep>=OB_STEPS.length?obFinish():obRender();
+}
+async function obFinish(){
+  document.getElementById('ob-overlay').style.display='none';
+  try{localStorage.setItem('ob_done','true');}catch{}
+  const payload={
+    sport:_obData.sport||null,
+    goal:{type:_obData.goal_type||null,race_info:null},
+    schedule:{days_per_week:_obData.days_per_week||null,training_days:_obData.training_days||[],long_session_days:_obData.long_session_days||[]},
+    coaching_style:_obData.coaching_style||null,
+    completed:true
+  };
+  try{await fetch(`${API}/api/profile`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});}catch{}
+}
+async function obCheck(){
+  try{if(localStorage.getItem('ob_done')==='true')return;}catch{}
+  // 尝试从后端确认，后端无响应时默认弹出
+  try{
+    const p=await fetch(`${API}/api/profile`).then(r=>r.json());
+    if(!p.completed)obShow();
+  }catch{
+    obShow();
+  }
+}
+/* ═══════════════════════════════════════════════════ */
+
 loadHistory();
+obCheck();
 </script>
 </body>
 </html>

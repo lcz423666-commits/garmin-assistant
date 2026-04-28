@@ -64,7 +64,33 @@ class ChatRequest(BaseModel):
 @app.post("/api/chat")
 async def chat(req: ChatRequest):
     health_context = build_context_for_chat()
-    system_content = SYSTEM_PROMPT + "\n\n" + health_context
+    profile = _read_profile()
+    style_hint = COACHING_STYLE_PROMPTS.get(profile.get("coaching_style") or "", "")
+    sport_hint = ""
+    sport_map = {"cycling": "骑行", "running": "跑步", "swimming": "游泳", "triathlon": "铁三"}
+    if profile.get("sport"):
+        sport_hint = f"用户主项：{sport_map.get(profile['sport'], profile['sport'])}。"
+    goal_hint = ""
+    goal_type_map = {"ftp_improve": "提升能力", "race": "备赛", "fat_loss": "减脂", "maintain": "保持健康"}
+    if profile.get("goal", {}).get("type"):
+        goal_hint = f"训练目标：{goal_type_map.get(profile['goal']['type'], profile['goal']['type'])}。"
+        if profile["goal"].get("race_info"):
+            ri = profile["goal"]["race_info"]
+            goal_hint += f"备赛赛事：{ri.get('event','')} {ri.get('date','')}。"
+    sched = profile.get("schedule") or {}
+    day_map = {"Mon":"周一","Tue":"周二","Wed":"周三","Thu":"周四","Fri":"周五","Sat":"周六","Sun":"周日"}
+    sched_hint = ""
+    if sched.get("training_days"):
+        days_str = "、".join(day_map.get(d, d) for d in sched["training_days"])
+        sched_hint = f"训练日：{days_str}。"
+    if sched.get("long_session_days"):
+        long_str = "、".join(day_map.get(d, d) for d in sched["long_session_days"])
+        sched_hint += f"长距离日：{long_str}。"
+    profile_ctx = " ".join(filter(None, [sport_hint, goal_hint, sched_hint, style_hint]))
+    system_content = SYSTEM_PROMPT
+    if profile_ctx:
+        system_content += f"\n\n用户信息：{profile_ctx}"
+    system_content += "\n\n" + health_context
     messages = [{"role": "system", "content": system_content}]
     for m in req.messages:
         messages.append({"role": m.role, "content": m.content})
@@ -418,3 +444,66 @@ async def report_detail(report_date: str, type: str = ""):
 @app.get("/api/health")
 async def health_check():
     return {"status": "ok"}
+
+
+# ── 用户画像 ──────────────────────────────────────────────────
+
+PROFILE_PATH = Path("/root/garmin_assistant/data/congzhi/user_onboarding_profile.json")
+
+_EMPTY_PROFILE = {
+    "sport": None,
+    "goal": {"type": None, "race_info": None},
+    "schedule": {"days_per_week": None, "training_days": [], "long_session_days": []},
+    "coaching_style": None,
+    "completed": False,
+}
+
+COACHING_STYLE_PROMPTS = {
+    "strict": "回答风格：严师直接，直接指出问题不包装，数据说话，不用鼓励语，言简意赅。",
+    "data": "回答风格：数据理性，引用具体数字，逻辑清晰，少废话，不用情绪化表达。",
+    "gentle": "回答风格：鼓励温和，多用正面肯定语言，指出问题时先肯定再建议，语气温暖。",
+    "friend": "回答风格：朋友平等，口语化，像朋友聊天，不要过于正式，可以稍微随意一点。",
+}
+
+
+def _read_profile() -> dict:
+    try:
+        if PROFILE_PATH.exists():
+            return json.loads(PROFILE_PATH.read_text(encoding="utf-8"))
+    except Exception:
+        pass
+    return dict(_EMPTY_PROFILE)
+
+
+def _write_profile(data: dict):
+    PROFILE_PATH.parent.mkdir(parents=True, exist_ok=True)
+    PROFILE_PATH.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+
+
+class ProfilePayload(BaseModel):
+    sport: str | None = None
+    goal: dict | None = None
+    schedule: dict | None = None
+    coaching_style: str | None = None
+    completed: bool = False
+
+
+@app.get("/api/profile")
+async def get_profile():
+    return _read_profile()
+
+
+@app.post("/api/profile")
+async def save_profile(payload: ProfilePayload):
+    data = _read_profile()
+    if payload.sport is not None:
+        data["sport"] = payload.sport
+    if payload.goal is not None:
+        data["goal"] = payload.goal
+    if payload.schedule is not None:
+        data["schedule"] = payload.schedule
+    if payload.coaching_style is not None:
+        data["coaching_style"] = payload.coaching_style
+    data["completed"] = payload.completed
+    _write_profile(data)
+    return {"ok": True}
