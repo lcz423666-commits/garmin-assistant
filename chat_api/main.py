@@ -64,7 +64,24 @@ class ChatRequest(BaseModel):
 @app.post("/api/chat")
 async def chat(req: ChatRequest):
     health_context = build_context_for_chat()
-    system_content = SYSTEM_PROMPT + "\n\n" + health_context
+    profile = _read_profile()
+    style_hint = COACHING_STYLE_PROMPTS.get(profile.get("coaching_style") or "", "")
+
+    # 优先注入完整的用户画像 Markdown；不存在时退化为简短 profile 摘要
+    portrait_path = Path("/root/garmin_assistant/data/congzhi/user_portrait.md")
+    portrait_md = ""
+    if portrait_path.exists():
+        try:
+            portrait_md = portrait_path.read_text(encoding="utf-8").strip()
+        except Exception:
+            portrait_md = ""
+
+    system_content = SYSTEM_PROMPT
+    if style_hint:
+        system_content += f"\n\n{style_hint}"
+    if portrait_md:
+        system_content += f"\n\n以下是该用户的长期画像（基于真实历史数据生成），回答时务必参考：\n\n{portrait_md}"
+    system_content += "\n\n" + health_context
     messages = [{"role": "system", "content": system_content}]
     for m in req.messages:
         messages.append({"role": m.role, "content": m.content})
@@ -418,3 +435,129 @@ async def report_detail(report_date: str, type: str = ""):
 @app.get("/api/health")
 async def health_check():
     return {"status": "ok"}
+
+
+# ── 用户画像 ──────────────────────────────────────────────────
+
+PROFILE_PATH = Path("/root/garmin_assistant/data/congzhi/user_onboarding_profile.json")
+
+_EMPTY_PROFILE = {
+    "personal_info": {
+        "nickname": None,
+        "gender": None,
+        "age": None,
+        "height_cm": None,
+        "weight_kg": None,
+    },
+    "sport": None,
+    "goal": {"type": None, "race_info": None},
+    "schedule": {"days_per_week": None, "training_days": [], "long_session_days": []},
+    "coaching_style": None,
+    "completed": False,
+}
+
+COACHING_STYLE_PROMPTS = {
+    "strict": "回答风格：严师直接，直接指出问题不包装，数据说话，不用鼓励语，言简意赅。",
+    "data": "回答风格：数据理性，引用具体数字，逻辑清晰，少废话，不用情绪化表达。",
+    "gentle": "回答风格：鼓励温和，多用正面肯定语言，指出问题时先肯定再建议，语气温暖。",
+    "friend": "回答风格：朋友平等，口语化，像朋友聊天，不要过于正式，可以稍微随意一点。",
+}
+
+
+def _read_profile() -> dict:
+    try:
+        if PROFILE_PATH.exists():
+            return json.loads(PROFILE_PATH.read_text(encoding="utf-8"))
+    except Exception:
+        pass
+    return dict(_EMPTY_PROFILE)
+
+
+def _write_profile(data: dict):
+    PROFILE_PATH.parent.mkdir(parents=True, exist_ok=True)
+    PROFILE_PATH.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+
+
+class ProfilePayload(BaseModel):
+    personal_info: dict | None = None
+    sport: str | None = None
+    goal: dict | None = None
+    schedule: dict | None = None
+    coaching_style: str | None = None
+    completed: bool | None = None
+
+
+@app.get("/api/profile")
+async def get_profile():
+    return _read_profile()
+
+
+@app.post("/api/profile")
+async def save_profile(payload: ProfilePayload):
+    data = _read_profile()
+    # 兼容旧 profile：补全 personal_info 字段
+    if "personal_info" not in data:
+        data["personal_info"] = dict(_EMPTY_PROFILE["personal_info"])
+
+    if payload.personal_info is not None:
+        data["personal_info"].update(payload.personal_info)
+    if payload.sport is not None:
+        data["sport"] = payload.sport
+    if payload.goal is not None:
+        data["goal"] = payload.goal
+    if payload.schedule is not None:
+        data["schedule"] = payload.schedule
+    if payload.coaching_style is not None:
+        data["coaching_style"] = payload.coaching_style
+    if payload.completed is not None:
+        data["completed"] = payload.completed
+    _write_profile(data)
+
+    # 触发用户画像 Markdown 重新生成
+    try:
+        sys.path.insert(0, str(Path(__file__).parent.parent / "app"))
+        from portrait_builder import build_portrait
+        build_portrait()
+    except Exception as exc:
+        print(f"[portrait] 生成失败: {exc}", flush=True)
+
+    return {"ok": True}
+
+
+@app.post("/api/portrait/refresh")
+async def refresh_portrait():
+    """手动重新生成用户画像。"""
+    try:
+        sys.path.insert(0, str(Path(__file__).parent.parent / "app"))
+        from portrait_builder import build_portrait
+        result = build_portrait()
+        return {"ok": True, **result}
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=str(exc))
+
+
+@app.get("/api/portrait")
+async def get_portrait():
+    """返回画像 Markdown 文本，供前端展示用。"""
+    portrait_path = Path("/root/garmin_assistant/data/congzhi/user_portrait.md")
+    if portrait_path.exists():
+        return {"markdown": portrait_path.read_text(encoding="utf-8")}
+    return {"markdown": ""}
+
+
+@app.get("/api/portrait/stats")
+async def get_portrait_stats():
+    """返回画像统计 JSON，供前端智能问卷使用。"""
+    stats_path = Path("/root/garmin_assistant/data/congzhi/user_portrait_stats.json")
+    if stats_path.exists():
+        try:
+            return json.loads(stats_path.read_text(encoding="utf-8"))
+        except Exception:
+            pass
+    # 没有统计数据时尝试现场计算
+    try:
+        sys.path.insert(0, str(Path(__file__).parent.parent / "app"))
+        from portrait_builder import compute_stats
+        return compute_stats(90)
+    except Exception:
+        return {"period_days": 90, "data_count": {"sleep": 0, "cycling": 0}}
