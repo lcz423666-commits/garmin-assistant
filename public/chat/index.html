@@ -89,6 +89,24 @@ textarea::placeholder{color:var(--text-dim)}
 .ob-opt.selected{background:var(--accent);color:#0c1419;border-color:var(--accent);font-weight:600}
 .ob-confirm{width:100%;margin-top:4px;padding:12px;border-radius:12px;background:var(--surface3);border:1px solid var(--border);color:var(--text-muted);font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;transition:all .18s}
 .ob-confirm:hover{border-color:var(--accent);color:var(--accent)}
+/* 设置面板 */
+#st-overlay{position:fixed;inset:0;z-index:180;background:rgba(12,20,25,.78);backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:20px}
+.st-sheet{width:100%;max-width:440px;max-height:85vh;background:var(--surface);border:1px solid var(--border);border-radius:20px;display:flex;flex-direction:column}
+.st-head{padding:18px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.st-body{padding:18px 20px;overflow-y:auto;display:flex;flex-direction:column;gap:18px}
+.st-section-title{font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:.12em;color:var(--text-muted);text-transform:uppercase}
+.st-row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.st-label{font-size:13px;color:var(--text-muted);min-width:60px}
+.st-input{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:14px;padding:9px 12px;outline:none;transition:border-color .2s;font-family:'Outfit',sans-serif}
+.st-input:focus{border-color:var(--border-hi)}
+.st-input::placeholder{color:var(--text-dim)}
+.st-gender-btn{flex:1;padding:8px;border-radius:10px;border:1px solid var(--border);background:var(--surface2);color:var(--text-muted);font-size:13px;cursor:pointer;transition:all .18s}
+.st-gender-btn.selected{background:var(--accent);color:#0c1419;border-color:var(--accent);font-weight:600}
+.st-action{padding:12px;border-radius:12px;background:var(--accent);color:#0c1419;border:none;font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;font-weight:600;transition:opacity .15s}
+.st-action:hover{opacity:.88}
+.st-link{padding:11px 14px;border-radius:10px;background:var(--surface2);border:1px solid var(--border);color:var(--text-muted);font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;transition:all .18s}
+.st-link:hover{border-color:var(--border-hi);color:var(--accent)}
+.st-summary{font-size:12px;color:var(--text-dim);line-height:1.5}
 </style>
 </head>
 <body>
@@ -104,7 +122,7 @@ textarea::placeholder{color:var(--text-dim)}
   </div>
   <div style="margin-left:auto;display:flex;align-items:center;gap:10px">
     <button id="clear-btn" onclick="clearChat()" style="background:transparent;border:1px solid var(--border);border-radius:8px;padding:4px 10px;color:var(--text-muted);font-size:11px;font-family:'Barlow Condensed',sans-serif;letter-spacing:.08em;cursor:pointer;transition:all .2s" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-muted)'">清除对话</button>
-    <button onclick="obShow()" title="个人设置" style="background:transparent;border:1px solid var(--border);border-radius:8px;width:28px;height:28px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;color:var(--text-muted);flex-shrink:0" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-muted)'">
+    <button onclick="settingsShow()" title="个人设置" style="background:transparent;border:1px solid var(--border);border-radius:8px;width:28px;height:28px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;color:var(--text-muted);flex-shrink:0" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-muted)'">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
     </button>
     <div style="width:6px;height:6px;border-radius:50%;background:var(--accent);box-shadow:0 0 6px var(--accent-glow)"></div>
@@ -304,6 +322,72 @@ textarea::placeholder{color:var(--text-dim)}
       </div>
     </div>
     <div id="mbody" class="scroll-area" style="padding:16px 20px;display:flex;flex-direction:column;gap:10px"></div>
+  </div>
+</div>
+
+<!-- 设置面板 -->
+<div id="st-overlay" style="display:none">
+  <div class="st-sheet">
+    <div class="st-head">
+      <div>
+        <div class="fd" style="font-size:18px;letter-spacing:.05em;text-transform:uppercase">个人设置</div>
+        <div style="font-size:11px;color:var(--text-muted);margin-top:2px">完成后会自动更新画像</div>
+      </div>
+      <div onclick="settingsHide()" style="width:32px;height:32px;border-radius:8px;background:var(--surface2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-muted)">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 18L18 6M6 6l12 12"/></svg>
+      </div>
+    </div>
+    <div class="st-body">
+      <!-- 个人信息 -->
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div class="st-section-title">个人信息</div>
+        <div class="st-row">
+          <span class="st-label">昵称</span>
+          <input type="text" id="st-nickname" class="st-input" placeholder="例如：丛至">
+        </div>
+        <div class="st-row">
+          <span class="st-label">性别</span>
+          <div style="flex:1;display:flex;gap:8px">
+            <button class="st-gender-btn" data-g="male" onclick="stPickGender('male')">男</button>
+            <button class="st-gender-btn" data-g="female" onclick="stPickGender('female')">女</button>
+          </div>
+        </div>
+        <div class="st-row">
+          <span class="st-label">年龄</span>
+          <input type="number" id="st-age" class="st-input" min="10" max="100" placeholder="周岁">
+        </div>
+        <div class="st-row">
+          <span class="st-label">身高</span>
+          <input type="number" id="st-height" class="st-input" min="100" max="230" placeholder="cm">
+        </div>
+        <div class="st-row">
+          <span class="st-label">体重</span>
+          <input type="number" id="st-weight" class="st-input" min="30" max="200" step="0.1" placeholder="kg">
+        </div>
+        <button class="st-action" onclick="stSavePersonal()">保存个人信息</button>
+        <div id="st-personal-msg" style="font-size:12px;color:var(--text-dim);min-height:14px"></div>
+      </div>
+
+      <!-- 训练偏好 -->
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div class="st-section-title">训练偏好</div>
+        <div id="st-prefs-summary" class="st-summary">读取中...</div>
+        <div class="st-link" onclick="stStartQuestionnaire()">
+          <span>重新设置训练偏好</span>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg>
+        </div>
+      </div>
+
+      <!-- 用户画像查看 -->
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div class="st-section-title">用户画像</div>
+        <div class="st-summary">画像基于你的真实历史数据 + 问卷答案生成，AI 每次对话都会读取它来理解你。</div>
+        <div class="st-link" onclick="stViewPortrait()">
+          <span>查看当前画像</span>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -782,6 +866,110 @@ function resetGpxPage() {
   document.getElementById('gpx-file-input').value = '';
   document.getElementById('gpx-analysis-body').innerHTML = '';
   document.getElementById('ride-weight').value = '';
+}
+/* ═══════════════════════════════════════════════════ */
+
+/* ═══════════════ 设置面板 ═══════════════ */
+let _stProfile = null;
+let _stGender = null;
+
+async function settingsShow(){
+  document.getElementById('st-overlay').style.display='flex';
+  await stLoadProfile();
+}
+function settingsHide(){document.getElementById('st-overlay').style.display='none';}
+
+async function stLoadProfile(){
+  try{
+    const p = await fetch(`${API}/api/profile`).then(r=>r.json());
+    _stProfile = p || {};
+    const pi = p.personal_info || {};
+    document.getElementById('st-nickname').value = pi.nickname || '';
+    document.getElementById('st-age').value = pi.age || '';
+    document.getElementById('st-height').value = pi.height_cm || '';
+    document.getElementById('st-weight').value = pi.weight_kg || '';
+    _stGender = pi.gender || null;
+    document.querySelectorAll('.st-gender-btn').forEach(b=>{
+      b.classList.toggle('selected', b.dataset.g === _stGender);
+    });
+    stRenderPrefsSummary(p);
+  }catch{
+    _stProfile = {};
+    document.getElementById('st-prefs-summary').textContent = '后端连接失败，无法读取偏好';
+  }
+}
+
+function stPickGender(g){
+  _stGender = g;
+  document.querySelectorAll('.st-gender-btn').forEach(b=>{
+    b.classList.toggle('selected', b.dataset.g === g);
+  });
+}
+
+function stRenderPrefsSummary(p){
+  const sportMap = {cycling:'骑行', running:'跑步', swimming:'游泳', triathlon:'铁三'};
+  const goalMap = {ftp_improve:'提升能力', race:'备赛', fat_loss:'减脂', maintain:'保持健康'};
+  const styleMap = {strict:'严师直接', data:'数据理性', gentle:'鼓励温和', friend:'朋友平等'};
+  const dayMap = {Mon:'周一',Tue:'周二',Wed:'周三',Thu:'周四',Fri:'周五',Sat:'周六',Sun:'周日'};
+  const bits=[];
+  if(p.sport) bits.push('主项：'+(sportMap[p.sport]||p.sport));
+  if(p.goal?.type) bits.push('目标：'+(goalMap[p.goal.type]||p.goal.type));
+  if(p.schedule?.days_per_week) bits.push('频次：每周'+p.schedule.days_per_week+'天');
+  if(p.schedule?.training_days?.length){
+    bits.push('训练日：'+p.schedule.training_days.map(d=>dayMap[d]||d).join('、'));
+  }
+  if(p.schedule?.long_session_days?.length){
+    bits.push('长距离：'+p.schedule.long_session_days.map(d=>dayMap[d]||d).join('、'));
+  }
+  if(p.coaching_style) bits.push('风格：'+(styleMap[p.coaching_style]||p.coaching_style));
+  const el = document.getElementById('st-prefs-summary');
+  el.textContent = bits.length ? bits.join(' · ') : '尚未完成训练偏好问卷';
+}
+
+async function stSavePersonal(){
+  const msg = document.getElementById('st-personal-msg');
+  const personal_info = {
+    nickname: document.getElementById('st-nickname').value.trim() || null,
+    gender: _stGender,
+    age: parseInt(document.getElementById('st-age').value) || null,
+    height_cm: parseInt(document.getElementById('st-height').value) || null,
+    weight_kg: parseFloat(document.getElementById('st-weight').value) || null,
+  };
+  msg.style.color = 'var(--text-dim)';
+  msg.textContent = '保存中...';
+  try{
+    const r = await fetch(`${API}/api/profile`, {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({personal_info})
+    });
+    if(!r.ok) throw new Error('HTTP '+r.status);
+    msg.style.color = 'var(--accent)';
+    msg.textContent = '已保存，画像已更新';
+    setTimeout(()=>{msg.textContent='';},2500);
+  }catch(e){
+    msg.style.color = '#f87171';
+    msg.textContent = '保存失败：'+e.message;
+  }
+}
+
+function stStartQuestionnaire(){
+  settingsHide();
+  setTimeout(()=>obShow(), 200);
+}
+
+async function stViewPortrait(){
+  try{
+    const r = await fetch(`${API}/api/portrait`).then(r=>r.json());
+    const md = (r.markdown || '').trim();
+    if(!md){alert('画像尚未生成。完成问卷或保存个人信息后会自动生成。');return;}
+    const modal = document.getElementById('modal'), sheet = document.getElementById('msheet');
+    document.getElementById('mtitle').textContent = '👤 用户画像';
+    document.getElementById('msub').textContent = 'AI 每次对话都会读取这份画像';
+    document.getElementById('mbody').innerHTML = `<div class="bubble" style="background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:14px 16px;font-size:13px;color:var(--text-muted);max-width:100%;line-height:1.7">${md ? marked.parse(md) : ''}</div>`;
+    modal.style.display = 'flex';
+    requestAnimationFrame(()=>requestAnimationFrame(()=>sheet.classList.add('open')));
+  }catch(e){alert('画像读取失败：'+e.message);}
 }
 /* ═══════════════════════════════════════════════════ */
 
