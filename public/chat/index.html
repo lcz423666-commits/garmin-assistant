@@ -975,71 +975,201 @@ async function stViewPortrait(){
 
 /* ═══════════════ 用户画像问卷 ═══════════════ */
 const OB_DAYS=[{l:'周一',v:'Mon'},{l:'周二',v:'Tue'},{l:'周三',v:'Wed'},{l:'周四',v:'Thu'},{l:'周五',v:'Fri'},{l:'周六',v:'Sat'},{l:'周日',v:'Sun'}];
-const OB_STEPS=[
-  {q:'你的主项是？',type:'single',field:'sport',
-    opts:[{l:'骑行',v:'cycling'},{l:'跑步',v:'running'},{l:'游泳',v:'swimming'},{l:'铁三',v:'triathlon'}]},
-  {q:'当前训练目标是？',type:'single',field:'goal_type',
-    opts:[{l:'提升能力',v:'ftp_improve'},{l:'备赛',v:'race'},{l:'减脂',v:'fat_loss'},{l:'保持健康',v:'maintain'}]},
-  {q:'一周通常训练几天？',type:'single',field:'days_per_week',
-    opts:[{l:'2天',v:2},{l:'3天',v:3},{l:'4天',v:4},{l:'5天',v:5},{l:'6天以上',v:6}]},
-  {q:'哪几天是你的训练日？',type:'multi',field:'training_days',opts:[...OB_DAYS]},
-  {q:'哪几天安排长距离训练？',type:'multi',field:'long_session_days',
-    opts:[...OB_DAYS,{l:'无固定',v:'__none__'}]},
-  {q:'你希望 AI 用什么风格和你沟通？',type:'single',field:'coaching_style',
-    opts:[{l:'严师直接',v:'strict'},{l:'数据理性',v:'data'},{l:'鼓励温和',v:'gentle'},{l:'朋友平等',v:'friend'}]},
-];
+const CN_TO_EN_DAY={'周一':'Mon','周二':'Tue','周三':'Wed','周四':'Thu','周五':'Fri','周六':'Sat','周日':'Sun'};
+
+let OB_STEPS=[];
 let _obStep=0,_obData={},_obMulti=[];
 
-function obShow(){
-  _obStep=0;_obData={sport:null,goal_type:null,days_per_week:null,training_days:[],long_session_days:[],coaching_style:null};
+// 基于真实数据 stats 构建问卷；没数据则退回基础版
+function buildOnboardingSteps(stats){
+  const sportStep={q:'你的主项是？',type:'single',field:'sport',
+    opts:[{l:'骑行',v:'cycling'},{l:'跑步',v:'running'},{l:'游泳',v:'swimming'},{l:'铁三',v:'triathlon'}]};
+  const styleStep={q:'你希望 AI 用什么风格和你沟通？',type:'single',field:'coaching_style',
+    opts:[{l:'严师直接',v:'strict'},{l:'数据理性',v:'data'},{l:'鼓励温和',v:'gentle'},{l:'朋友平等',v:'friend'}]};
+
+  const cyclingCount=(stats?.data_count?.cycling)||0;
+  const hasData=cyclingCount>=5;
+
+  if(!hasData){
+    return [
+      sportStep,
+      {q:'当前训练目标是？',type:'single',field:'goal_type',
+        opts:[{l:'提升能力',v:'ftp_improve'},{l:'备赛',v:'race'},{l:'减脂',v:'fat_loss'},{l:'保持健康',v:'maintain'}]},
+      {q:'一周通常训练几天？',type:'single',field:'days_per_week',
+        opts:[{l:'2天',v:2},{l:'3天',v:3},{l:'4天',v:4},{l:'5天',v:5},{l:'6天以上',v:6}]},
+      {q:'哪几天是你的训练日？',type:'multi',field:'training_days',opts:[...OB_DAYS]},
+      {q:'哪几天安排长距离训练？',type:'multi',field:'long_session_days',
+        opts:[...OB_DAYS,{l:'无固定',v:'__none__'}]},
+      styleStep,
+    ];
+  }
+
+  // 智能问卷：基于历史数据
+  const t=stats.training||{};
+  const freq=Math.round((t.rides_per_week||3)*10)/10;
+  const freqInt=Math.max(2,Math.round(freq));
+  const topDays=(t.weekday_top||[]).slice(0,3).map(p=>p[0]);
+  const longDay=(t.long_ride_typical_days||[])[0];
+  const ctl=stats.ctl||{};
+  const sleep=stats.sleep||{};
+
+  const intro=`📊 基于你最近 ${stats.period_days||90} 天的真实数据：每周训练 ${freq} 次` +
+    (t.weekly_tss_avg?`，周均 TSS ${Math.round(t.weekly_tss_avg)}`:'') +
+    (ctl.current?`，CTL 当前 ${ctl.current}`:'') + '。';
+
+  const freqStep={
+    q:`${intro}\n\n关于训练频次，你接下来希望？`,
+    type:'single',field:'frequency_intent',
+    opts:[
+      {l:`保持每周 ${freqInt} 次`,v:`maintain:${freqInt}`},
+      {l:`提升到每周 ${freqInt+1} 次`,v:`up1:${freqInt+1}`},
+      {l:`大幅提升到每周 ${freqInt+2} 次`,v:`up2:${freqInt+2}`},
+      {l:'减少强度，更注重恢复',v:`down:${Math.max(2,freqInt-1)}`},
+    ]
+  };
+
+  const daysStep=topDays.length>=2?{
+    q:`你实际最常在 ${topDays.join('、')} 训练。`,
+    type:'single',field:'days_intent',
+    opts:[
+      {l:'就按这几天，AI 别乱建议',v:`keep:${topDays.join(',')}`},
+      {l:'我想重新规划训练日',v:'replan'},
+    ]
+  }:null;
+
+  const longStep=longDay?{
+    q:`你的长距离骑行通常在 ${longDay}。`,
+    type:'single',field:'long_day_intent',
+    opts:[
+      {l:`继续在 ${longDay}`,v:`keep:${longDay}`},
+      {l:'换一天',v:'change'},
+      {l:'暂时不安排长距离',v:'none'},
+    ]
+  }:null;
+
+  const goalStep={
+    q:'你接下来想要的训练取向是？',
+    type:'single',field:'goal_type',
+    opts:[
+      {l:'保持现状，规律生活',v:'maintain'},
+      {l:'循序渐进，能力提升',v:'ftp_improve'},
+      {l:'备战赛事，激进提升',v:'race'},
+      {l:'减脂塑形，控制体重',v:'fat_loss'},
+    ]
+  };
+
+  return [sportStep,freqStep,daysStep,longStep,goalStep,styleStep].filter(Boolean);
+}
+
+async function obShow(){
+  let stats=null;
+  try{
+    const r=await fetch(`${API}/api/portrait/stats`);
+    if(r.ok)stats=await r.json();
+  }catch{}
+  OB_STEPS=buildOnboardingSteps(stats);
+  _obStep=0;
+  _obData={sport:null,goal_type:null,days_per_week:null,training_days:[],long_session_days:[],coaching_style:null,
+           frequency_intent:null,days_intent:null,long_day_intent:null};
   document.getElementById('ob-overlay').style.display='flex';
   obRender();
 }
 function obSkip(){document.getElementById('ob-overlay').style.display='none';try{localStorage.setItem('ob_done','true');}catch{}}
+
 function obRender(){
   const s=OB_STEPS[_obStep];
   document.getElementById('ob-step-label').textContent=`${_obStep+1} / ${OB_STEPS.length}`;
   document.getElementById('ob-progress').style.width=((_obStep/OB_STEPS.length)*100)+'%';
-  document.getElementById('ob-q').textContent=s.q;
+  // 支持换行的 question 文本
+  document.getElementById('ob-q').innerHTML=esc(s.q).replace(/\n/g,'<br>');
   _obMulti=[];
   const el=document.getElementById('ob-opts');
   if(s.type==='single'){
-    el.innerHTML=s.opts.map(o=>`<button class="ob-opt" onclick="obPick(${JSON.stringify(o.v)})">${o.l}</button>`).join('');
+    el.innerHTML=s.opts.map((o,i)=>`<button class="ob-opt" data-i="${i}">${esc(o.l)}</button>`).join('');
   }else{
-    el.innerHTML=s.opts.map(o=>`<button class="ob-opt" data-v="${o.v}" onclick="obToggle(this,'${o.v}')">${o.l}</button>`).join('')
-      +`<button class="ob-confirm" onclick="obNextMulti()">确认</button>`;
+    el.innerHTML=s.opts.map((o,i)=>`<button class="ob-opt" data-i="${i}">${esc(o.l)}</button>`).join('')
+      +`<button class="ob-confirm" data-action="confirm">确认</button>`;
   }
+  // 事件代理：避免 onclick 字符串拼接的引号冲突
+  el.onclick=(e)=>{
+    const opt=e.target.closest('.ob-opt');
+    if(opt){
+      const idx=parseInt(opt.dataset.i);
+      const v=OB_STEPS[_obStep].opts[idx].v;
+      if(OB_STEPS[_obStep].type==='single')obPick(v);
+      else obToggle(opt,v);
+      return;
+    }
+    if(e.target.closest('.ob-confirm'))obNextMulti();
+  };
 }
+
 function obToggle(btn,v){
   const none='__none__';
-  if(v===none){_obMulti=[none];document.querySelectorAll('#ob-opts .ob-opt').forEach(b=>b.classList.toggle('selected',b.dataset.v===none));return;}
+  const all=document.querySelectorAll('#ob-opts .ob-opt');
+  if(v===none){
+    _obMulti=[none];
+    all.forEach(b=>{
+      const optV=OB_STEPS[_obStep].opts[parseInt(b.dataset.i)].v;
+      b.classList.toggle('selected',optV===none);
+    });
+    return;
+  }
   _obMulti=_obMulti.filter(x=>x!==none);
-  const i=_obMulti.indexOf(v);if(i>=0)_obMulti.splice(i,1);else _obMulti.push(v);
-  document.querySelectorAll('#ob-opts .ob-opt').forEach(b=>{
-    if(b.dataset.v===none)b.classList.remove('selected');
-    else b.classList.toggle('selected',_obMulti.includes(b.dataset.v));
+  const i=_obMulti.indexOf(v);
+  if(i>=0)_obMulti.splice(i,1);else _obMulti.push(v);
+  all.forEach(b=>{
+    const optV=OB_STEPS[_obStep].opts[parseInt(b.dataset.i)].v;
+    if(optV===none)b.classList.remove('selected');
+    else b.classList.toggle('selected',_obMulti.includes(optV));
   });
 }
+
 function obPick(v){_obData[OB_STEPS[_obStep].field]=v;_obStep++;_obStep>=OB_STEPS.length?obFinish():obRender();}
 function obNextMulti(){
   _obData[OB_STEPS[_obStep].field]=_obMulti.filter(x=>x!=='__none__');
   _obStep++;_obStep>=OB_STEPS.length?obFinish():obRender();
 }
+
 async function obFinish(){
   document.getElementById('ob-overlay').style.display='none';
   try{localStorage.setItem('ob_done','true');}catch{}
+
+  // 把意愿型答案映射回真实 schema
+  let daysPerWeek=_obData.days_per_week||null;
+  if(_obData.frequency_intent){
+    const parts=String(_obData.frequency_intent).split(':');
+    if(parts[1])daysPerWeek=parseInt(parts[1])||daysPerWeek;
+  }
+  let trainingDays=_obData.training_days||[];
+  if(_obData.days_intent){
+    const parts=String(_obData.days_intent).split(':');
+    if(parts[0]==='keep'&&parts[1]){
+      trainingDays=parts[1].split(',').map(d=>CN_TO_EN_DAY[d]||d);
+    }
+  }
+  let longSessionDays=_obData.long_session_days||[];
+  if(_obData.long_day_intent){
+    const parts=String(_obData.long_day_intent).split(':');
+    if(parts[0]==='keep'&&parts[1]){
+      longSessionDays=[CN_TO_EN_DAY[parts[1]]||parts[1]];
+    }else if(parts[0]==='none'){
+      longSessionDays=[];
+    }
+  }
+
   const payload={
     sport:_obData.sport||null,
     goal:{type:_obData.goal_type||null,race_info:null},
-    schedule:{days_per_week:_obData.days_per_week||null,training_days:_obData.training_days||[],long_session_days:_obData.long_session_days||[]},
+    schedule:{days_per_week:daysPerWeek,training_days:trainingDays,long_session_days:longSessionDays},
     coaching_style:_obData.coaching_style||null,
     completed:true
   };
   try{await fetch(`${API}/api/profile`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});}catch{}
 }
+
 async function obCheck(){
   try{if(localStorage.getItem('ob_done')==='true')return;}catch{}
-  // 尝试从后端确认，后端无响应时默认弹出
   try{
     const p=await fetch(`${API}/api/profile`).then(r=>r.json());
     if(!p.completed)obShow();

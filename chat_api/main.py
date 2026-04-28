@@ -543,3 +543,21 @@ async def get_portrait():
     if portrait_path.exists():
         return {"markdown": portrait_path.read_text(encoding="utf-8")}
     return {"markdown": ""}
+
+
+@app.get("/api/portrait/stats")
+async def get_portrait_stats():
+    """返回画像统计 JSON，供前端智能问卷使用。"""
+    stats_path = Path("/root/garmin_assistant/data/congzhi/user_portrait_stats.json")
+    if stats_path.exists():
+        try:
+            return json.loads(stats_path.read_text(encoding="utf-8"))
+        except Exception:
+            pass
+    # 没有统计数据时尝试现场计算
+    try:
+        sys.path.insert(0, str(Path(__file__).parent.parent / "app"))
+        from portrait_builder import compute_stats
+        return compute_stats(90)
+    except Exception:
+        return {"period_days": 90, "data_count": {"sleep": 0, "cycling": 0}}
